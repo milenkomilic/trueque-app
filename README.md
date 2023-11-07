@@ -1,2 +1,9 @@
-# trueque-app
-Aplicación web que permite el trueque de diversos bienes entre personas de todo el mundo!
+## Truque App!
+
+
+#### Bienvenidos a Trueque App!
+
+- Qué es Truque App?
+- Como funciona Trueque App?
+- Que tecnologías ocupamos?
+- Quienes somos?
