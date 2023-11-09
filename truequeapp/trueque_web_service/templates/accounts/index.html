@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Welcome to Truequeapp</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.9.3/css/bulma.min.css">
+    <style>
+        .custom-green-background {
+            background-color: #167341; /* Un verde oscuro basado en la paleta de Bulma */
+        }
+        footer {
+            background-color: #393939; /* Un color oscuro para el footer */
+            padding: 1rem;
+            color: white; /* Texto en blanco */
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <section class="hero custom-green-background is-fullheight-with-navbar">
+        <div class="hero-body">
+            <div class="container has-text-centered">
+                <p class="title has-text-white">
+                    Welcome to Truequeapp!
+                </p>
+                <p class="subtitle has-text-white">
+                    Your one-stop hub for all your needs.
+                </p>
+                <div class="buttons is-centered">
+                    <a href="{% url 'login' %}" class="button is-light">Login</a>
+                    <a href="{% url 'signup' %}" class="button is-dark">Sign Up</a>
+                </div>
+            </div>
+        </div>
+    </section>
+    <footer>
+        <p>© Truequeapp - All Rights Reserved</p>
+    </footer>
+</body>
+</html>

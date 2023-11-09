@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Sign Up</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.9.3/css/bulma.min.css">
+</head>
+<body>
+    <section class="section">
+        <div class="container">
+            <div class="columns is-centered">
+                <div class="column is-5-tablet is-4-desktop is-3-widescreen">
+                    <form method="post" class="box">
+                        <h1 class="title has-text-centered">Sign Up</h1>
+                        {% csrf_token %}
+                        <!-- Renderiza cada campo manualmente -->
+                        <div class="field">
+                            <label class="label">Username</label>
+                            <div class="control">
+                                {{ form.username }}
+                                {% if form.username.errors %}
+                                    <p class="help is-danger">{{ form.username.errors.as_text }}</p>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="field">
+                            <label class="label">Password</label>
+                            <div class="control">
+                                {{ form.password1 }}
+                                {% if form.password1.errors %}
+                                    <p class="help is-danger">{{ form.password1.errors.as_text }}</p>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="field">
+                            <label class="label">Password Confirmation</label>
+                            <div class="control">
+                                {{ form.password2 }}
+                                {% if form.password2.errors %}
+                                    <p class="help is-danger">{{ form.password2.errors.as_text }}</p>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <button class="button is-primary is-fullwidth" type="submit">Sign Up</button>
+                    </form>
+                    <p class="has-text-centered">¿Ya tienes una cuenta? <a href="{% url 'login' %}">Inicia sesión aquí</a></p>
+                </div>
+            </div>
+        </div>
+    </section>
+</body>
+</html>

@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Profile</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.9.3/css/bulma.min.css">
+</head>
+<body>
+    <section class="section">
+        <div class="container">
+            <h1 class="title has-text-centered">Profile</h1>
+            <div class="box">
+                <article class="media">
+                    <div class="media-content">
+                        <div class="content">
+                            <p class="title is-4">Full Name</p>
+                            <p class="subtitle is-6">{{ user.get_full_name }}</p>
+                        </div>
+                    </div>
+                </article>
+                <hr>
+                <article class="media">
+                    <div class="media-content">
+                        <div class="content">
+                            <p class="title is-4">Email</p>
+                            <p class="subtitle is-6">{{ user.email }}</p>
+                        </div>
+                    </div>
+                </article>
+                <hr>
+                <article class="media">
+                    <div class="media-content">
+                        <div class="content">
+                            <p class="title is-4">Address</p>
+                            <p class="subtitle is-6">{{ user.profile.address }}</p> 
+                        </div>
+                    </div>
+                </article>
+                <hr>
+                <article class="media">
+                    <div class="media-content">
+                        <div class="content">
+                            <p class="title is-4">Date of Birth</p>
+                            <p class="subtitle is-6">{{ user.profile.date_of_birth|date:"Y-m-d" }}</p>
+                        </div>
+                    </div>
+                </article>
+            </div>
+        </div>
+    </section>
+</body>
+</html>
