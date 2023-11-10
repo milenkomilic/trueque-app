@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'trueque_web_service'
 ]
 
 MIDDLEWARE = [
@@ -80,6 +81,8 @@ DATABASES = {
     }
 }
 
+
+AUTH_USER_MODEL = 'trueque_web_service.CustomUser'
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
