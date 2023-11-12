@@ -19,7 +19,6 @@ def login_view(request):
         form = AuthenticationForm()
     return render(request, 'accounts/login.html', {'form': form})
 
-
 def signup_view(request):
     if request.method == 'POST':
         form = CustomUserCreationForm(request.POST)

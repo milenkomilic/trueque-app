@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Sign Up</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.9.3/css/bulma.min.css">
+</head>
+<body>
+    <section class="section">
+        <div class="container">
+            <div class="columns is-centered">
+                <div class="column is-5-tablet is-4-desktop is-3-widescreen">
+                    {% if messages %}
+                        <div class="notification is-danger">
+                            {% for message in messages %}
+                                <p>{{ message }}</p>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                    <form method="post" class="box">
+                        <h1 class="title has-text-centered">Sign Up</h1>
+                        {% csrf_token %}
+
+                        <!-- Campo de Username -->
+                        <div class="field">
+                            <label class="label">Username</label>
+                            <div class="control">
+                                {{ form.username }}
+                                {% if form.username.errors %}
+                                    <p class="help is-danger">{{ form.username.errors.as_text }}</p>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <!-- Campos adicionales -->
+
+                        <!-- Campo de Name -->
+                        <div class="field">
+                            <label class="label">Name</label>
+                            <div class="control">
+                                {{ form.name }}
+                                {% if form.name.errors %}
+                                    <p class="help is-danger">{{ form.name.errors.as_text }}</p>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <!-- Campo de Lastname -->
+                        <div class="field">
+                            <label class="label">Lastname</label>
+                            <div class="control">
+                                {{ form.lastname }}
+                                {% if form.lastname.errors %}
+                                    <p class="help is-danger">{{ form.lastname.errors.as_text }}</p>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <!-- Campo de Lastname Maternal -->
+                        <div class="field">
+                            <label class="label">Lastname Maternal</label>
+                            <div class="control">
+                                {{ form.lastname_m }}
+                                {% if form.lastname_m.errors %}
+                                    <p class="help is-danger">{{ form.lastname_m.errors.as_text }}</p>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <!-- Campo de Date of Birth -->
+                        <div class="field">
+                            <label class="label">Date of Birth</label>
+                            <div class="control">
+                                {{ form.date_of_birth }}
+                                {% if form.date_of_birth.errors %}
+                                    <p class="help is-danger">{{ form.date_of_birth.errors.as_text }}</p>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <!-- Campo de Email -->
+                        <div class="field">
+                            <label class="label">Email</label>
+                            <div class="control">
+                                {{ form.email }}
+                                {% if form.email.errors %}
+                                    <p class="help is-danger">{{ form.email.errors.as_text }}</p>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <!-- Campos de Contraseña -->
+                        <div class="field">
+                            <label class="label">Password</label>
+                            <div class="control">
+                                {{ form.password1 }}
+                                {% if form.password1.errors %}
+                                    <p class="help is-danger">{{ form.password1.errors.as_text }}</p>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="field">
+                            <label class="label">Password Confirmation</label>
+                            <div class="control">
+                                {{ form.password2 }}
+                                {% if form.password2.errors %}
+                                    <p class="help is-danger">{{ form.password2.errors.as_text }}</p>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <!-- Botón de Envío -->
+                        <button class="button is-primary is-fullwidth" type="submit">Sign Up</button>
+                    </form>
+                    <p class="has-text-centered">¿Ya tienes una cuenta? <a href="{% url 'login' %}">Inicia sesión aquí</a></p>
+                </div>
+            </div>
+        </div>
+    </section>
+</body>
+</html>
