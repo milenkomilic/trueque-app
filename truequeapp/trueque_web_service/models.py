@@ -67,3 +67,4 @@ class Item(models.Model):
     tags = models.CharField(max_length=255, blank=True)
     date_posted = models.DateTimeField(auto_now_add=True)
     active = models.BooleanField(default=True)
+

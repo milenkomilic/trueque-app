@@ -6,17 +6,46 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.9.3/css/bulma.min.css">
     <style>
         .custom-green-background {
-            background-color: #167341; /* Un verde oscuro basado en la paleta de Bulma */
+            background-color: #167341;
         }
         footer {
-            background-color: #393939; /* Un color oscuro para el footer */
+            background-color: #393939;
             padding: 1rem;
-            color: white; /* Texto en blanco */
+            color: white;
             text-align: center;
         }
     </style>
 </head>
 <body>
+
+    <nav class="navbar is-dark" role="navigation" aria-label="main navigation">
+        <div class="navbar-brand">
+            <a class="navbar-item" href="{% url 'index' %}">
+                <strong>Truequeapp</strong>
+            </a>
+            <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false" data-target="navbarBasicExample">
+                <span aria-hidden="true"></span>
+                <span aria-hidden="true"></span>
+                <span aria-hidden="true"></span>
+            </a>
+        </div>
+        <div id="navbarBasicExample" class="navbar-menu">
+            <div class="navbar-start">
+                <!-- Links comunes a todos los usuarios -->
+                <a class="navbar-item">¿Quiénes somos?</a>
+                <a class="navbar-item">Contacto</a>
+    
+                {% if user.is_authenticated %}
+                    <!-- Links para usuarios autenticados -->
+                    <a class="navbar-item" href="{% url 'upload' %}">Subir Oferta</a>
+                    <a class="navbar-item">Ver Ofertas</a>
+                    <a class="navbar-item">Ver Perfil</a>
+                    <a class="navbar-item" href="{% url 'logout' %}">Logout</a>
+                {% endif %}
+            </div>
+        </div>
+    </nav>
+
     <section class="hero custom-green-background is-fullheight-with-navbar">
         <div class="hero-body">
             <div class="container has-text-centered">
@@ -26,15 +55,49 @@
                 <p class="subtitle has-text-white">
                     Your one-stop hub for all your needs.
                 </p>
-                <div class="buttons is-centered">
-                    <a href="{% url 'login' %}" class="button is-light">Login</a>
-                    <a href="{% url 'signup' %}" class="button is-dark">Sign Up</a>
-                </div>
+                    {% if user.is_authenticated %}
+                        <p>El usuario está autenticado</p>
+                    {% else %}
+                        <div class="buttons is-centered">
+                            <a href="{% url 'login' %}" class="button is-light">Login</a>
+                            <a href="{% url 'signup' %}" class="button is-dark">Sign Up</a>
+                        </div>
+                        <p>El usuario no está autenticado</p>
+                    {% endif %}
             </div>
         </div>
     </section>
-    <footer>
+
+    <footer class="footer">
         <p>© Truequeapp - All Rights Reserved</p>
-    </footer>
+    </footer>    
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Obtén todas las "navbar-burger" elementos
+            const $navbarBurgers = Array.prototype.slice.call(document.querySelectorAll('.navbar-burger'), 0);
+    
+            // Verifica si hay navbar burgers
+            if ($navbarBurgers.length > 0) {
+    
+                // Añade un evento de clic en cada uno
+                $navbarBurgers.forEach(el => {
+                    el.addEventListener('click', () => {
+    
+                        // Obtiene el valor del atributo "data-target"
+                        const target = el.dataset.target;
+                        const $target = document.getElementById(target);
+    
+                        // Alterna las clases "is-active" en el "navbar-burger" y el "navbar-menu"
+                        el.classList.toggle('is-active');
+                        $target.classList.toggle('is-active');
+    
+                    });
+                });
+            }
+        });
+    </script>
+    
+
 </body>
 </html>

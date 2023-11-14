@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Subir Producto - Truequeapp</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.9.3/css/bulma.min.css">
+
+
+    <style>
+        html {
+            height: 100%;
+        }
+        body {
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+        .content {
+            flex: 1;
+            /* Agregar cualquier estilo adicional para el contenido aquí */
+        }
+        .footer {
+            background-color: #167341;
+            padding: 1rem;
+            color: white;
+            text-align: center;
+        }
+    </style>
+
+</head>
+<body>
+
+    <nav class="content" class="navbar is-dark" role="navigation" aria-label="main navigation">
+        <div class="navbar-brand">
+            <a class="navbar-item" href="{% url 'index' %}">
+                <strong>Truequeapp</strong>
+            </a>
+            <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false" data-target="navbarBasicExample">
+                <span aria-hidden="true"></span>
+                <span aria-hidden="true"></span>
+                <span aria-hidden="true"></span>
+            </a>
+        </div>
+        <div id="navbarBasicExample" class="navbar-menu">
+            <div class="navbar-start">
+                <!-- Links comunes a todos los usuarios -->
+                <a class="navbar-item">¿Quiénes somos?</a>
+                <a class="navbar-item">Contacto</a>
+    
+                {% if user.is_authenticated %}
+                    <!-- Links para usuarios autenticados -->
+                    <a class="navbar-item">Subir Oferta</a>
+                    <a class="navbar-item">Ver Ofertas</a>
+                    <a class="navbar-item">Ver Perfil</a>
+                    <a class="navbar-item" href="{% url 'logout' %}">Logout</a>
+                {% endif %}
+            </div>
+        </div>
+    </nav>
+
+    <section>
+        <div class="container">
+            <div class="columns is-centered">
+                <div class="column is-half">
+                    <h1 class="title">Subir Producto</h1>
+                    <form method="post" enctype="multipart/form-data" class="form">
+                        {% csrf_token %}
+                        {% for field in form %}
+                            <div class="field">
+                                <label class="label" for="id_{{ field.name }}">{{ field.label }}</label>
+                                {% if field.name == 'description' %}
+                                    <textarea class="textarea" id="id_{{ field.name }}" name="{{ field.name }}" rows="4">{{ field.value }}</textarea>
+                                {% elif field.field.widget.input_type == 'number' and field.name == 'price' %}
+                                    <input type="number" step="0.01" class="input" id="id_{{ field.name }}" name="{{ field.name }}" value="{{ field.value }}">
+                                {% elif field.field.widget.input_type == 'text' and field.name == 'tags' %}
+                                    <input type="text" class="input" id="id_{{ field.name }}" name="{{ field.name }}" value="{{ field.value }}" placeholder="Ingrese las etiquetas separadas por comas">
+                                {% elif field.field.widget.input_type == 'checkbox' %}
+                                    <input type="checkbox" class="checkbox" id="id_{{ field.name }}" name="{{ field.name }}" {% if field.value %} checked {% endif %}>
+                                {% else %}
+                                    <input type="{{ field.field.widget.input_type }}" class="input" id="id_{{ field.name }}" name="{{ field.name }}" value="{{ field.value }}">
+                                {% endif %}
+                                {% for error in field.errors %}
+                                    <p class="help is-danger">{{ error }}</p>
+                                {% endfor %}
+                            </div>
+                        {% endfor %}
+                        <div class="field">
+                            <div class="control">
+                                <button type="submit" class="button is-link">Subir</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <p>© Truequeapp - All Rights Reserved</p>
+    </footer>    
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Obtén todas las "navbar-burger" elementos
+            const $navbarBurgers = Array.prototype.slice.call(document.querySelectorAll('.navbar-burger'), 0);
+    
+            // Verifica si hay navbar burgers
+            if ($navbarBurgers.length > 0) {
+    
+                // Añade un evento de clic en cada uno
+                $navbarBurgers.forEach(el => {
+                    el.addEventListener('click', () => {
+    
+                        // Obtiene el valor del atributo "data-target"
+                        const target = el.dataset.target;
+                        const $target = document.getElementById(target);
+    
+                        // Alterna las clases "is-active" en el "navbar-burger" y el "navbar-menu"
+                        el.classList.toggle('is-active');
+                        $target.classList.toggle('is-active');
+    
+                    });
+                });
+            }
+        });
+    </script>
+
+</body>
+</html>
+
+
+

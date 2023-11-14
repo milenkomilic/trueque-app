@@ -1,6 +1,17 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from .models import CustomUser
+from .models import Item
+
+class ItemForm(forms.ModelForm):
+    class Meta:
+        model = Item
+        fields = ['title', 'description', 'location', 'price', 'tags', 'active']
+        widgets = {
+            'description': forms.Textarea(attrs={'rows': 4}),
+            'tags': forms.TextInput(attrs={'placeholder': 'Ingrese las etiquetas separadas por comas'}),
+            'price': forms.NumberInput(attrs={'step': '0.01'}),
+        }
 
 class CustomUserCreationForm(UserCreationForm):
     name = forms.CharField(max_length=255, required=True)
@@ -26,3 +37,4 @@ class CustomUserCreationForm(UserCreationForm):
         if commit:
             user.save()
         return user
+
