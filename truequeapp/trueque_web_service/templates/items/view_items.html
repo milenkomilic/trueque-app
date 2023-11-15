@@ -26,18 +26,23 @@
                     <p>No hay items disponibles.</p>
                 {% endfor %}
             </div>
-            <nav class="pagination" role="navigation" aria-label="pagination">
-                <a href="?page={{ page_obj.previous_page_number }}" class="pagination-previous" {% if not page_obj.has_previous %}disabled{% endif %}>Anterior</a>
-                <a href="?page={{ page_obj.next_page_number }}" class="pagination-next" {% if not page_obj.has_next %}disabled{% endif %}>Siguiente</a>
-                <ul class="pagination-list">
-                    {% for num in page_obj.paginator.page_range %}
-                        {% if page_obj.number == num %}
-                            <li><a class="pagination-link is-current">{{ num }}</a></li>
-                        {% else %}
-                            <li><a href="?page={{ num }}" class="pagination-link">{{ num }}</a></li>
-                        {% endif %}
-                    {% endfor %}
-                </ul>
+                <nav class="pagination" role="navigation" aria-label="pagination">
+                    {% if page_obj.has_previous %}
+                        <a href="?page={{ page_obj.previous_page_number }}" class="pagination-previous">Anterior</a>
+                    {% endif %}
+                    {% if page_obj.has_next %}
+                        <a href="?page={{ page_obj.next_page_number }}" class="pagination-next">Siguiente</a>
+                    {% endif %}
+                
+                    <ul class="pagination-list">
+                        {% for num in page_obj.paginator.page_range %}
+                            {% if page_obj.number == num %}
+                                <li><a class="pagination-link is-current">{{ num }}</a></li>
+                            {% else %}
+                                <li><a href="?page={{ num }}" class="pagination-link">{{ num }}</a></li>
+                            {% endif %}
+                        {% endfor %}
+                    </ul>
             </nav>
         </div>
     </section>

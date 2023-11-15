@@ -4,7 +4,7 @@ from django.contrib.auth import login
 from .forms import CustomUserCreationForm, ItemForm
 from django.contrib.auth.decorators import login_required
 from django.utils import timezone
-from django.core.paginator import Paginator, EmptyPage
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from .models import Item
 
 def index(request):
@@ -57,13 +57,17 @@ def upload_item_view(request):
 
 @login_required
 def view_items(request):
-    item_list = Item.objects.all()
-    paginator = Paginator(item_list, 10)  # Muestra 10 items por página
+    items_list = Item.objects.all()  # Asegúrate de que esto obtiene los items correctos
+    paginator = Paginator(items_list, 10)  # Muestra 10 items por página
 
-    page_number = request.GET.get('page', 1)  # Obtén el número de página, predeterminado a 1
+    page = request.GET.get('page')
     try:
-        page_obj = paginator.page(page_number)
+        items = paginator.page(page)
+    except PageNotAnInteger:
+        # Si la página no es un entero, muestra la primera página.
+        items = paginator.page(1)
     except EmptyPage:
-        page_obj = paginator.page(1)  # Si la página no existe, muestra la primera página
+        # Si la página está fuera de rango, muestra la última página de resultados.
+        items = paginator.page(paginator.num_pages)
 
-    return render(request, 'items/view_items.html', {'page_obj': page_obj})
+    return render(request, 'items/view_items.html', {'page_obj': items})
