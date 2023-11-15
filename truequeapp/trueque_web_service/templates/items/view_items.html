@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Lista de Items</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.9.3/css/bulma.min.css">
+</head>
+<body>
+    <section class="section">
+        <div class="container">
+            <h1 class="title">Items</h1>
+            <div class="columns is-multiline">
+                {% for item in page_obj %}
+                    <div class="column is-one-quarter">
+                        <div class="card">
+                            <div class="card-content">
+                                <p class="title">{{ item.title }}</p>
+                                <p class="subtitle">{{ item.price }}</p>
+                                <div class="content">
+                                    {{ item.description|truncatewords:30 }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% empty %}
+                    <p>No hay items disponibles.</p>
+                {% endfor %}
+            </div>
+            <nav class="pagination" role="navigation" aria-label="pagination">
+                <a href="?page={{ page_obj.previous_page_number }}" class="pagination-previous" {% if not page_obj.has_previous %}disabled{% endif %}>Anterior</a>
+                <a href="?page={{ page_obj.next_page_number }}" class="pagination-next" {% if not page_obj.has_next %}disabled{% endif %}>Siguiente</a>
+                <ul class="pagination-list">
+                    {% for num in page_obj.paginator.page_range %}
+                        {% if page_obj.number == num %}
+                            <li><a class="pagination-link is-current">{{ num }}</a></li>
+                        {% else %}
+                            <li><a href="?page={{ num }}" class="pagination-link">{{ num }}</a></li>
+                        {% endif %}
+                    {% endfor %}
+                </ul>
+            </nav>
+        </div>
+    </section>
+</body>
+</html>

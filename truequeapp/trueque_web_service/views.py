@@ -1,9 +1,11 @@
-from django.shortcuts import render
 from django.contrib.auth.forms import AuthenticationForm
 from django.shortcuts import render, redirect
 from django.contrib.auth import login
 from .forms import CustomUserCreationForm, ItemForm
 from django.contrib.auth.decorators import login_required
+from django.utils import timezone
+from django.core.paginator import Paginator, EmptyPage
+from .models import Item
 
 def index(request):
     return render(request, 'accounts/index.html')
@@ -34,7 +36,7 @@ def signup_view(request):
 def password_reset_view(request):
     return render(request, 'accounts/password_reset.html')
 
-
+@login_required
 def user_profile_view(request):
     return render(request, 'accounts/user_profile.html')
 
@@ -44,11 +46,24 @@ def upload_item_view(request):
         form = ItemForm(request.POST, request.FILES)
         if form.is_valid():
             item = form.save(commit=False)
-            item.user = request.user  # Asumiendo que el modelo Item tiene un campo 'user'
+            item.user = request.user
+            item.date_posted = timezone.now()  # Asigna manualmente la fecha y hora actuales
             item.save()
-            # Redirige a donde quieras después de subir el producto, por ejemplo a la página de inicio
             return redirect('index')
     else:
         form = ItemForm()
 
-    return render(request, 'uploads/upload_offer.html', {'form': form})
+    return render(request, 'items/upload_offer.html', {'form': form})
+
+@login_required
+def view_items(request):
+    item_list = Item.objects.all()
+    paginator = Paginator(item_list, 10)  # Muestra 10 items por página
+
+    page_number = request.GET.get('page', 1)  # Obtén el número de página, predeterminado a 1
+    try:
+        page_obj = paginator.page(page_number)
+    except EmptyPage:
+        page_obj = paginator.page(1)  # Si la página no existe, muestra la primera página
+
+    return render(request, 'items/view_items.html', {'page_obj': page_obj})

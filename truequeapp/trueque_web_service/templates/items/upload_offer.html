@@ -4,9 +4,10 @@
     <meta charset="UTF-8">
     <title>Subir Producto - Truequeapp</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.9.3/css/bulma.min.css">
-
-
     <style>
+        .custom-green-background {
+            background-color: #167341;
+        }
         html {
             height: 100%;
         }
@@ -19,7 +20,6 @@
         }
         .content {
             flex: 1;
-            /* Agregar cualquier estilo adicional para el contenido aquí */
         }
         .footer {
             background-color: #167341;
@@ -32,7 +32,7 @@
 </head>
 <body>
 
-    <nav class="content" class="navbar is-dark" role="navigation" aria-label="main navigation">
+    <nav class="navbar is-dark" role="navigation" aria-label="main navigation">
         <div class="navbar-brand">
             <a class="navbar-item" href="{% url 'index' %}">
                 <strong>Truequeapp</strong>
@@ -51,7 +51,7 @@
     
                 {% if user.is_authenticated %}
                     <!-- Links para usuarios autenticados -->
-                    <a class="navbar-item">Subir Oferta</a>
+                    <a class="navbar-item" href="{% url 'upload_item' %}">Subir Oferta</a>
                     <a class="navbar-item">Ver Ofertas</a>
                     <a class="navbar-item">Ver Perfil</a>
                     <a class="navbar-item" href="{% url 'logout' %}">Logout</a>
@@ -60,42 +60,47 @@
         </div>
     </nav>
 
-    <section>
-        <div class="container">
-            <div class="columns is-centered">
-                <div class="column is-half">
-                    <h1 class="title">Subir Producto</h1>
-                    <form method="post" enctype="multipart/form-data" class="form">
-                        {% csrf_token %}
-                        {% for field in form %}
+    <section class="hero custom-green-background is-fullheight-with-navbar">
+        <div class="hero-body">
+            <div class="container">
+                <div class="columns is-centered">
+                    <div class="column is-8"> <!-- Puedes ajustar el tamaño de la columna aquí -->
+                        <h1 class="title">Subir Producto</h1>
+                        <form method="post" enctype="multipart/form-data">
+                            {% csrf_token %}
+                            {% for field in form %}
+                                <div class="field">
+                                    <label class="label" for="id_{{ field.name }}">{{ field.label }}</label>
+                                    <div class="control">
+                                        {% if field.name == 'description' %}
+                                            <textarea class="textarea" id="id_{{ field.name }}" name="{{ field.name }}" rows="4">{{ field.value }}</textarea>
+                                        {% elif field.field.widget.input_type == 'number' and field.name == 'price' %}
+                                            <input type="number" step="0.01" class="input" id="id_{{ field.name }}" name="{{ field.name }}" value="{{ field.value }}">
+                                        {% elif field.field.widget.input_type == 'text' and field.name == 'tags' %}
+                                            <input type="text" class="input" id="id_{{ field.name }}" name="{{ field.name }}" value="{{ field.value }}" placeholder="Ingrese las etiquetas separadas por comas">
+                                        {% elif field.field.widget.input_type == 'checkbox' %}
+                                            <input type="checkbox" class="checkbox" id="id_{{ field.name }}" name="{{ field.name }}" {% if field.value %} checked {% endif %}>
+                                        {% else %}
+                                            <input type="{{ field.field.widget.input_type }}" class="input" id="id_{{ field.name }}" name="{{ field.name }}" value="{{ field.value }}">
+                                        {% endif %}
+                                    </div>
+                                    {% for error in field.errors %}
+                                        <p class="help is-danger">{{ error }}</p>
+                                    {% endfor %}
+                                </div>
+                            {% endfor %}
                             <div class="field">
-                                <label class="label" for="id_{{ field.name }}">{{ field.label }}</label>
-                                {% if field.name == 'description' %}
-                                    <textarea class="textarea" id="id_{{ field.name }}" name="{{ field.name }}" rows="4">{{ field.value }}</textarea>
-                                {% elif field.field.widget.input_type == 'number' and field.name == 'price' %}
-                                    <input type="number" step="0.01" class="input" id="id_{{ field.name }}" name="{{ field.name }}" value="{{ field.value }}">
-                                {% elif field.field.widget.input_type == 'text' and field.name == 'tags' %}
-                                    <input type="text" class="input" id="id_{{ field.name }}" name="{{ field.name }}" value="{{ field.value }}" placeholder="Ingrese las etiquetas separadas por comas">
-                                {% elif field.field.widget.input_type == 'checkbox' %}
-                                    <input type="checkbox" class="checkbox" id="id_{{ field.name }}" name="{{ field.name }}" {% if field.value %} checked {% endif %}>
-                                {% else %}
-                                    <input type="{{ field.field.widget.input_type }}" class="input" id="id_{{ field.name }}" name="{{ field.name }}" value="{{ field.value }}">
-                                {% endif %}
-                                {% for error in field.errors %}
-                                    <p class="help is-danger">{{ error }}</p>
-                                {% endfor %}
+                                <div class="control">
+                                    <button type="submit" class="button is-link">Subir</button>
+                                </div>
                             </div>
-                        {% endfor %}
-                        <div class="field">
-                            <div class="control">
-                                <button type="submit" class="button is-link">Subir</button>
-                            </div>
-                        </div>
-                    </form>
+                        </form>
+                    </div>
                 </div>
             </div>
         </div>
     </section>
+    
 
     <footer class="footer">
         <p>© Truequeapp - All Rights Reserved</p>

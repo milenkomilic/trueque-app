@@ -17,7 +17,6 @@ class CustomUserManager(BaseUserManager):
 
 # Modelo CustomUser
 class CustomUser(AbstractBaseUser):
-    id = models.CharField(max_length=255, primary_key=True)
     username = models.CharField(max_length=255, unique=True)
     name = models.CharField(max_length=255)
     lastname = models.CharField(max_length=255, blank=True)
@@ -35,13 +34,11 @@ class CustomUser(AbstractBaseUser):
 
 # Modelo LoginAttempt
 class LoginAttempt(models.Model):
-    id = models.CharField(max_length=255, primary_key=True)
     custom_user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     timestamp = models.DateTimeField(auto_now_add=True)
 
 # Modelo Trade
 class Trade(models.Model):
-    id = models.CharField(max_length=255, primary_key=True)
     status = models.CharField(max_length=255)
     date_initiated = models.DateTimeField(auto_now_add=True)
     active = models.BooleanField(default=True)
@@ -57,7 +54,6 @@ class UserTrade(models.Model):
 
 # Modelo Item
 class Item(models.Model):
-    id = models.CharField(max_length=255, primary_key=True)
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     trade = models.ForeignKey(Trade, on_delete=models.SET_NULL, null=True, blank=True)
     title = models.CharField(max_length=255)
@@ -67,4 +63,3 @@ class Item(models.Model):
     tags = models.CharField(max_length=255, blank=True)
     date_posted = models.DateTimeField(auto_now_add=True)
     active = models.BooleanField(default=True)
-

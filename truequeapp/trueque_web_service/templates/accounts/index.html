@@ -8,8 +8,21 @@
         .custom-green-background {
             background-color: #167341;
         }
-        footer {
-            background-color: #393939;
+        html {
+            height: 100%;
+        }
+        body {
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+        .content {
+            flex: 1;
+        }
+        .footer {
+            background-color: #167341;
             padding: 1rem;
             color: white;
             text-align: center;
@@ -37,8 +50,8 @@
     
                 {% if user.is_authenticated %}
                     <!-- Links para usuarios autenticados -->
-                    <a class="navbar-item" href="{% url 'upload' %}">Subir Oferta</a>
-                    <a class="navbar-item">Ver Ofertas</a>
+                    <a class="navbar-item" href="{% url 'upload_item' %}">Subir Oferta</a>
+                    <a class="navbar-item" href="{% url 'view_items' %}">Ver Ofertas</a>
                     <a class="navbar-item">Ver Perfil</a>
                     <a class="navbar-item" href="{% url 'logout' %}">Logout</a>
                 {% endif %}
@@ -68,9 +81,9 @@
         </div>
     </section>
 
-    <footer class="footer">
+    <footer>
         <p>© Truequeapp - All Rights Reserved</p>
-    </footer>    
+    </footer>
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
