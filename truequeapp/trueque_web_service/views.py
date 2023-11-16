@@ -58,7 +58,7 @@ def upload_item_view(request):
 @login_required
 def view_items(request):
     items_list = Item.objects.all()  # Asegúrate de que esto obtiene los items correctos
-    paginator = Paginator(items_list, 10)  # Muestra 10 items por página
+    paginator = Paginator(items_list, 4)  # Muestra 10 items por página
 
     page = request.GET.get('page')
     try:

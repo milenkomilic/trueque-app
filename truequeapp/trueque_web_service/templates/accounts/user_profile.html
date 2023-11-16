@@ -4,9 +4,82 @@
     <meta charset="UTF-8">
     <title>Profile</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.9.3/css/bulma.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
+    <style>
+        html, body {
+            height: 100%;
+            margin: 0;
+        }
+        body {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            background-color: #167341;
+        }
+        .section { /* Esta es la clase de tu contenido principal */
+            flex: 1; /* Esto hará que el contenido principal ocupe todo el espacio disponible */
+            display: flex;
+            flex-direction: column;
+        }
+        .box {
+            width: 80%; /* Ajusta el ancho al 80% de su contenedor padre */
+            margin: auto; /* Centra el box horizontalmente */
+            padding: 20px; /* Añade padding para más espacio interno */
+            /* Puedes agregar más estilos aquí según sea necesario */
+        }
+
+        /* Asegúrate de que el container también tenga el ancho adecuado */
+        .container {
+            width: 100%; /* O el ancho que prefieras */
+            /* Más estilos si es necesario */
+        }
+        .content {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        .content-wrapper {
+            flex: 1;
+        }
+        .hero {
+            /* Ajusta esta altura según necesites */
+            height: auto; 
+        }
+        .hero-body {
+            /* Asegúrate de que no haya demasiado padding o margen que esté empujando el contenido hacia abajo */
+            padding: 1rem;
+        }
+        .footer {
+            background-color: #333333; /* Color de fondo */
+            padding: 2rem 1rem; /* Espaciado interior */
+            color: white; /* Color del texto */
+            text-align: center;
+        }        
+        .footer a {
+            color: white; /* Color de los enlaces */
+            margin: 0 10px; /* Espaciado entre enlaces */
+            text-decoration: none; /* Sin subrayado */
+        }
+        
+        .footer a:hover {
+            text-decoration: underline; /* Subrayado al pasar el mouse */
+        }
+        
+        .footer-icons {
+            margin-top: 1rem; /* Espacio adicional encima de los íconos */
+        }
+        
+        /* Estilos para los íconos de redes sociales (ajusta según tus necesidades) */
+        .icon {
+            display: inline-block;
+            margin: 0 5px;
+            color: white;
+            font-size: 1.5rem; /* Tamaño de los íconos */
+        }
+
+    </style>
 </head>
 <body>
-
     <nav class="navbar is-dark" role="navigation" aria-label="main navigation">
         <div class="navbar-brand">
             <a class="navbar-item" href="{% url 'index' %}">
@@ -26,9 +99,9 @@
     
                 {% if user.is_authenticated %}
                     <!-- Links para usuarios autenticados -->
-                    <a class="navbar-item">Subir Oferta</a>
-                    <a class="navbar-item">Ver Ofertas</a>
-                    <a class="navbar-item">Ver Perfil</a>
+                    <a class="navbar-item" href="{% url 'upload_item' %}">Subir Oferta</a>
+                    <a class="navbar-item" href="{% url 'view_items' %}">Ver Ofertas</a>
+                    <a class="navbar-item" href="{% url 'user_profile' %}">Ver Perfil</a>
                     <a class="navbar-item" href="{% url 'logout' %}">Logout</a>
                 {% endif %}
             </div>
@@ -43,7 +116,7 @@
                     <div class="media-content">
                         <div class="content">
                             <p class="title is-4">Full Name</p>
-                            <p class="subtitle is-6">{{ user.get_full_name }}</p>
+                            <p class="subtitle is-6">{{ user.username }} {{ user.lastname }} {{ user.lastname_m }}</p>
                         </div>
                     </div>
                 </article>
@@ -60,22 +133,57 @@
                 <article class="media">
                     <div class="media-content">
                         <div class="content">
-                            <p class="title is-4">Address</p>
-                            <p class="subtitle is-6">{{ user.profile.address }}</p> 
-                        </div>
-                    </div>
-                </article>
-                <hr>
-                <article class="media">
-                    <div class="media-content">
-                        <div class="content">
                             <p class="title is-4">Date of Birth</p>
-                            <p class="subtitle is-6">{{ user.profile.date_of_birth|date:"Y-m-d" }}</p>
+                            <p class="subtitle is-6">{{ user.date_of_birth|date:"Y-m-d" }}</p>
                         </div>
                     </div>
                 </article>
             </div>
         </div>
     </section>
+
+    <footer class="footer">
+        <p>© Truequeapp - All Rights Reserved</p>
+        <div class="footer-links">
+            <a href="#">Acerca de</a>
+            <a href="#">Contacto</a>
+            <!-- Agrega más enlaces si lo deseas -->
+        </div>
+        <div class="footer-icons">
+            <!-- Ejemplo de íconos, puedes usar una librería como FontAwesome -->
+            <a href="#" class="icon"><i class="fab fa-facebook"></i></a>
+            <a href="#" class="icon"><i class="fab fa-twitter"></i></a>
+            <a href="#" class="icon"><i class="fab fa-instagram"></i></a>
+            <!-- Agrega más íconos de redes sociales si lo deseas -->
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Obtén todas las "navbar-burger" elementos
+            const $navbarBurgers = Array.prototype.slice.call(document.querySelectorAll('.navbar-burger'), 0);
+    
+            // Verifica si hay navbar burgers
+            if ($navbarBurgers.length > 0) {
+    
+                // Añade un evento de clic en cada uno
+                $navbarBurgers.forEach(el => {
+                    el.addEventListener('click', () => {
+    
+                        // Obtiene el valor del atributo "data-target"
+                        const target = el.dataset.target;
+                        const $target = document.getElementById(target);
+    
+                        // Alterna las clases "is-active" en el "navbar-burger" y el "navbar-menu"
+                        el.classList.toggle('is-active');
+                        $target.classList.toggle('is-active');
+    
+                    });
+                });
+            }
+        });
+    </script>
+
+
 </body>
 </html>
