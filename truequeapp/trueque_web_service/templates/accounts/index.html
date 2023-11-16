@@ -4,33 +4,65 @@
     <meta charset="UTF-8">
     <title>Welcome to Truequeapp</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.9.3/css/bulma.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
     <style>
-        .custom-green-background {
-            background-color: #167341;
-        }
-        html {
+        html, body {
             height: 100%;
+            margin: 0;
         }
         body {
-            margin: 0;
-            padding: 0;
             display: flex;
             flex-direction: column;
             min-height: 100vh;
+            background-color: #167341; /* Color de fondo para todo el cuerpo */
         }
         .content {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        .content-wrapper {
             flex: 1;
         }
-        .footer {
-            background-color: #167341;
-            padding: 1rem;
-            color: white;
-            text-align: center;
+        .hero {
+            /* Ajusta esta altura según necesites */
+            height: auto; 
         }
+        .hero-body {
+            /* Asegúrate de que no haya demasiado padding o margen que esté empujando el contenido hacia abajo */
+            padding: 1rem;
+        }
+        .footer {
+            background-color: #333333; /* Color de fondo */
+            padding: 2rem 1rem; /* Espaciado interior */
+            color: white; /* Color del texto */
+            text-align: center;
+        }        
+        .footer a {
+            color: white; /* Color de los enlaces */
+            margin: 0 10px; /* Espaciado entre enlaces */
+            text-decoration: none; /* Sin subrayado */
+        }
+        
+        .footer a:hover {
+            text-decoration: underline; /* Subrayado al pasar el mouse */
+        }
+        
+        .footer-icons {
+            margin-top: 1rem; /* Espacio adicional encima de los íconos */
+        }
+        
+        /* Estilos para los íconos de redes sociales (ajusta según tus necesidades) */
+        .icon {
+            display: inline-block;
+            margin: 0 5px;
+            color: white;
+            font-size: 1.5rem; /* Tamaño de los íconos */
+        }
+
     </style>
 </head>
 <body>
-
     <nav class="navbar is-dark" role="navigation" aria-label="main navigation">
         <div class="navbar-brand">
             <a class="navbar-item" href="{% url 'index' %}">
@@ -59,30 +91,44 @@
         </div>
     </nav>
 
-    <section class="hero custom-green-background is-fullheight-with-navbar">
-        <div class="hero-body">
-            <div class="container has-text-centered">
-                <p class="title has-text-white">
-                    Welcome to Truequeapp!
-                </p>
-                <p class="subtitle has-text-white">
-                    Your one-stop hub for all your needs.
-                </p>
-                    {% if user.is_authenticated %}
-                        <p>El usuario está autenticado</p>
-                    {% else %}
-                        <div class="buttons is-centered">
-                            <a href="{% url 'login' %}" class="button is-light">Login</a>
-                            <a href="{% url 'signup' %}" class="button is-dark">Sign Up</a>
-                        </div>
-                        <p>El usuario no está autenticado</p>
-                    {% endif %}
+    <div class="content">
+        <section class="hero custom-green-background is-medium">
+            <div class="hero-body">
+                <div class="container has-text-centered">
+                    <p class="title has-text-white">
+                        Welcome to Truequeapp!
+                    </p>
+                    <p class="subtitle has-text-white">
+                        Your one-stop hub for all your needs.
+                    </p>
+                        {% if user.is_authenticated %}
+                            <p>El usuario está autenticado</p>
+                        {% else %}
+                            <div class="buttons is-centered">
+                                <a href="{% url 'login' %}" class="button is-light">Login</a>
+                                <a href="{% url 'signup' %}" class="button is-dark">Sign Up</a>
+                            </div>
+                            <p>El usuario no está autenticado</p>
+                        {% endif %}
+                </div>
             </div>
-        </div>
-    </section>
+        </section>
+    </div>
 
-    <footer>
+    <footer class="footer">
         <p>© Truequeapp - All Rights Reserved</p>
+        <div class="footer-links">
+            <a href="#">Acerca de</a>
+            <a href="#">Contacto</a>
+            <!-- Agrega más enlaces si lo deseas -->
+        </div>
+        <div class="footer-icons">
+            <!-- Ejemplo de íconos, puedes usar una librería como FontAwesome -->
+            <a href="#" class="icon"><i class="fab fa-facebook"></i></a>
+            <a href="#" class="icon"><i class="fab fa-twitter"></i></a>
+            <a href="#" class="icon"><i class="fab fa-instagram"></i></a>
+            <!-- Agrega más íconos de redes sociales si lo deseas -->
+        </div>
     </footer>
 
     <script>
@@ -110,7 +156,5 @@
             }
         });
     </script>
-    
-
 </body>
 </html>

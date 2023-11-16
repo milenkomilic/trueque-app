@@ -2,36 +2,64 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Subir Producto - Truequeapp</title>
+    <title>Welcome to Truequeapp</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.9.3/css/bulma.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
     <style>
-        .custom-green-background {
-            background-color: #167341;
-        }
-        html {
-            height: 100%;
-        }
-        body {
+        html, body, div, section, footer {
             margin: 0;
             padding: 0;
-            display: flex;
-            flex-direction: column;
-            min-height: 100vh;
+            border: none;
+        }
+        /* Tus estilos existentes aquí... */
+        html, body {
+            height: 100%;
+            background-color: #167341;
         }
         .content {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        .content-wrapper {
             flex: 1;
         }
-        .footer {
-            background-color: #167341;
+        .hero-body {
+            /* Asegúrate de que no haya demasiado padding o margen que esté empujando el contenido hacia abajo */
             padding: 1rem;
+        }
+        .hero {
+            flex-grow: 1;
+        }
+        .footer {
+            background-color: #333333;
+            padding: 2rem 1rem;
             color: white;
             text-align: center;
         }
+        .footer a {
+            color: white; /* Color de los enlaces */
+            margin: 0 10px; /* Espaciado entre enlaces */
+            text-decoration: none; /* Sin subrayado */
+        }
+        .footer a:hover {
+            text-decoration: underline; /* Subrayado al pasar el mouse */
+        }
+        .footer-icons {
+            margin-top: 1rem; /* Espacio adicional encima de los íconos */
+        }
+        /* Estilos para los íconos de redes sociales (ajusta según tus necesidades) */
+        .icon {
+            display: inline-block;
+            margin: 0 5px;
+            color: white;
+            font-size: 1.5rem; /* Tamaño de los íconos */
+        }
     </style>
+
 
 </head>
 <body>
-
     <nav class="navbar is-dark" role="navigation" aria-label="main navigation">
         <div class="navbar-brand">
             <a class="navbar-item" href="{% url 'index' %}">
@@ -52,7 +80,7 @@
                 {% if user.is_authenticated %}
                     <!-- Links para usuarios autenticados -->
                     <a class="navbar-item" href="{% url 'upload_item' %}">Subir Oferta</a>
-                    <a class="navbar-item">Ver Ofertas</a>
+                    <a class="navbar-item" href="{% url 'view_items' %}">Ver Ofertas</a>
                     <a class="navbar-item">Ver Perfil</a>
                     <a class="navbar-item" href="{% url 'logout' %}">Logout</a>
                 {% endif %}
@@ -60,13 +88,13 @@
         </div>
     </nav>
 
-    <section class="hero custom-green-background is-fullheight-with-navbar">
+    <section class="hero custom-green-background is-medium is-flexible">
         <div class="hero-body">
             <div class="container">
                 <div class="columns is-centered">
-                    <div class="column is-8"> <!-- Puedes ajustar el tamaño de la columna aquí -->
-                        <h1 class="title">Subir Producto</h1>
-                        <form method="post" enctype="multipart/form-data">
+                    <div class="column is-6">
+                        <h1 class="title has-text-centered">Subir Producto</h1>
+                        <form method="post" enctype="multipart/form-data" class="box">
                             {% csrf_token %}
                             {% for field in form %}
                                 <div class="field">
@@ -74,15 +102,10 @@
                                     <div class="control">
                                         {% if field.name == 'description' %}
                                             <textarea class="textarea" id="id_{{ field.name }}" name="{{ field.name }}" rows="4">{{ field.value }}</textarea>
-                                        {% elif field.field.widget.input_type == 'number' and field.name == 'price' %}
-                                            <input type="number" step="0.01" class="input" id="id_{{ field.name }}" name="{{ field.name }}" value="{{ field.value }}">
-                                        {% elif field.field.widget.input_type == 'text' and field.name == 'tags' %}
-                                            <input type="text" class="input" id="id_{{ field.name }}" name="{{ field.name }}" value="{{ field.value }}" placeholder="Ingrese las etiquetas separadas por comas">
-                                        {% elif field.field.widget.input_type == 'checkbox' %}
-                                            <input type="checkbox" class="checkbox" id="id_{{ field.name }}" name="{{ field.name }}" {% if field.value %} checked {% endif %}>
                                         {% else %}
-                                            <input type="{{ field.field.widget.input_type }}" class="input" id="id_{{ field.name }}" name="{{ field.name }}" value="{{ field.value }}">
+                                            <input class="{{ field.field.widget.input_type }}" id="id_{{ field.name }}" name="{{ field.name }}" value="{{ field.value }}" class="input">
                                         {% endif %}
+                                        <!-- Aquí se eliminaron los íconos -->
                                     </div>
                                     {% for error in field.errors %}
                                         <p class="help is-danger">{{ error }}</p>
@@ -91,7 +114,7 @@
                             {% endfor %}
                             <div class="field">
                                 <div class="control">
-                                    <button type="submit" class="button is-link">Subir</button>
+                                    <button type="submit" class="button is-link is-fullwidth">Subir</button>
                                 </div>
                             </div>
                         </form>
@@ -100,11 +123,24 @@
             </div>
         </div>
     </section>
+  
     
 
     <footer class="footer">
         <p>© Truequeapp - All Rights Reserved</p>
-    </footer>    
+        <div class="footer-links">
+            <a href="#">Acerca de</a>
+            <a href="#">Contacto</a>
+            <!-- Agrega más enlaces si lo deseas -->
+        </div>
+        <div class="footer-icons">
+            <!-- Ejemplo de íconos, puedes usar una librería como FontAwesome -->
+            <a href="#" class="icon"><i class="fab fa-facebook"></i></a>
+            <a href="#" class="icon"><i class="fab fa-twitter"></i></a>
+            <a href="#" class="icon"><i class="fab fa-instagram"></i></a>
+            <!-- Agrega más íconos de redes sociales si lo deseas -->
+        </div>
+    </footer>  
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
@@ -131,9 +167,5 @@
             }
         });
     </script>
-
 </body>
 </html>
-
-
-

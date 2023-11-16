@@ -4,47 +4,181 @@
     <meta charset="UTF-8">
     <title>Lista de Items</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.9.3/css/bulma.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
+
+    <style>
+        html, body {
+            height: 100%;
+            margin: 0;
+        }
+        body {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            background-color: #167341; /* Color de fondo para todo el cuerpo */
+        }
+        .content {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        .content-wrapper {
+            flex: 1;
+        }
+        .hero {
+            /* Ajusta esta altura según necesites */
+            height: auto; 
+        }
+        .hero-body {
+            /* Asegúrate de que no haya demasiado padding o margen que esté empujando el contenido hacia abajo */
+            padding: 1rem;
+        }
+        .footer {
+            background-color: #333333; /* Color de fondo */
+            padding: 2rem 1rem; /* Espaciado interior */
+            color: white; /* Color del texto */
+            text-align: center;
+        }        
+        .footer a {
+            color: white; /* Color de los enlaces */
+            margin: 0 10px; /* Espaciado entre enlaces */
+            text-decoration: none; /* Sin subrayado */
+        }
+        
+        .footer a:hover {
+            text-decoration: underline; /* Subrayado al pasar el mouse */
+        }
+        
+        .footer-icons {
+            margin-top: 1rem; /* Espacio adicional encima de los íconos */
+        }
+        
+        /* Estilos para los íconos de redes sociales (ajusta según tus necesidades) */
+        .icon {
+            display: inline-block;
+            margin: 0 5px;
+            color: white;
+            font-size: 1.5rem; /* Tamaño de los íconos */
+        }
+
+    </style>
 </head>
 <body>
-    <section class="section">
-        <div class="container">
-            <h1 class="title">Items</h1>
-            <div class="columns is-multiline">
-                {% for item in page_obj %}
-                    <div class="column is-one-quarter">
-                        <div class="card">
-                            <div class="card-content">
-                                <p class="title">{{ item.title }}</p>
-                                <p class="subtitle">{{ item.price }}</p>
-                                <div class="content">
-                                    {{ item.description|truncatewords:30 }}
+
+    <nav class="navbar is-dark" role="navigation" aria-label="main navigation">
+        <div class="navbar-brand">
+            <a class="navbar-item" href="{% url 'index' %}">
+                <strong>Truequeapp</strong>
+            </a>
+            <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false" data-target="navbarBasicExample">
+                <span aria-hidden="true"></span>
+                <span aria-hidden="true"></span>
+                <span aria-hidden="true"></span>
+            </a>
+        </div>
+        <div id="navbarBasicExample" class="navbar-menu">
+            <div class="navbar-start">
+                <!-- Links comunes a todos los usuarios -->
+                <a class="navbar-item">¿Quiénes somos?</a>
+                <a class="navbar-item">Contacto</a>
+    
+                {% if user.is_authenticated %}
+                    <!-- Links para usuarios autenticados -->
+                    <a class="navbar-item" href="{% url 'upload_item' %}">Subir Oferta</a>
+                    <a class="navbar-item" href="{% url 'view_items' %}">Ver Ofertas</a>
+                    <a class="navbar-item">Ver Perfil</a>
+                    <a class="navbar-item" href="{% url 'logout' %}">Logout</a>
+                {% endif %}
+            </div>
+        </div>
+    </nav>
+
+    <div class="content-wrapper">
+        <section class="hero custom-green-background is-medium">
+            <div class="hero-body">
+                <div class="container">
+                    <h1 class="title">Items</h1>
+                    <div class="columns is-multiline">
+                        {% for item in page_obj %}
+                            <div class="column is-one-quarter">
+                                <div class="card">
+                                    <div class="card-content">
+                                        <p class="title">{{ item.title }}</p>
+                                        <p class="subtitle">{{ item.price }}</p>
+                                        <div class="content">
+                                            {{ item.description|truncatewords:30 }}
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                    </div>
-                {% empty %}
-                    <p>No hay items disponibles.</p>
-                {% endfor %}
-            </div>
-                <nav class="pagination" role="navigation" aria-label="pagination">
-                    {% if page_obj.has_previous %}
-                        <a href="?page={{ page_obj.previous_page_number }}" class="pagination-previous">Anterior</a>
-                    {% endif %}
-                    {% if page_obj.has_next %}
-                        <a href="?page={{ page_obj.next_page_number }}" class="pagination-next">Siguiente</a>
-                    {% endif %}
-                
-                    <ul class="pagination-list">
-                        {% for num in page_obj.paginator.page_range %}
-                            {% if page_obj.number == num %}
-                                <li><a class="pagination-link is-current">{{ num }}</a></li>
-                            {% else %}
-                                <li><a href="?page={{ num }}" class="pagination-link">{{ num }}</a></li>
-                            {% endif %}
+                        {% empty %}
+                            <p>No hay items disponibles.</p>
                         {% endfor %}
-                    </ul>
-            </nav>
+                    </div>
+                    <nav class="pagination" role="navigation" aria-label="pagination">
+                        {% if page_obj.has_previous %}
+                            <a href="?page={{ page_obj.previous_page_number }}" class="pagination-previous">Anterior</a>
+                        {% endif %}
+                        {% if page_obj.has_next %}
+                            <a href="?page={{ page_obj.next_page_number }}" class="pagination-next">Siguiente</a>
+                        {% endif %}
+                        <ul class="pagination-list">
+                            {% for num in page_obj.paginator.page_range %}
+                                {% if page_obj.number == num %}
+                                    <li><a class="pagination-link is-current">{{ num }}</a></li>
+                                {% else %}
+                                    <li><a href="?page={{ num }}" class="pagination-link">{{ num }}</a></li>
+                                {% endif %}
+                            {% endfor %}
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <footer class="footer">
+        <p>© Truequeapp - All Rights Reserved</p>
+        <div class="footer-links">
+            <a href="#">Acerca de</a>
+            <a href="#">Contacto</a>
+            <!-- Agrega más enlaces si lo deseas -->
         </div>
-    </section>
+        <div class="footer-icons">
+            <!-- Ejemplo de íconos, puedes usar una librería como FontAwesome -->
+            <a href="#" class="icon"><i class="fab fa-facebook"></i></a>
+            <a href="#" class="icon"><i class="fab fa-twitter"></i></a>
+            <a href="#" class="icon"><i class="fab fa-instagram"></i></a>
+            <!-- Agrega más íconos de redes sociales si lo deseas -->
+        </div>
+    </footer>
+    
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Obtén todas las "navbar-burger" elementos
+            const $navbarBurgers = Array.prototype.slice.call(document.querySelectorAll('.navbar-burger'), 0);
+    
+            // Verifica si hay navbar burgers
+            if ($navbarBurgers.length > 0) {
+    
+                // Añade un evento de clic en cada uno
+                $navbarBurgers.forEach(el => {
+                    el.addEventListener('click', () => {
+    
+                        // Obtiene el valor del atributo "data-target"
+                        const target = el.dataset.target;
+                        const $target = document.getElementById(target);
+    
+                        // Alterna las clases "is-active" en el "navbar-burger" y el "navbar-menu"
+                        el.classList.toggle('is-active');
+                        $target.classList.toggle('is-active');
+    
+                    });
+                });
+            }
+        });
+    </script>
+
 </body>
 </html>

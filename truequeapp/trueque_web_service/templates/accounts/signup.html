@@ -2,11 +2,67 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Sign Up</title>
+    <title>Welcome to Truequeapp</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.9.3/css/bulma.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
+    <style>
+        html, body {
+            height: 100%;
+            margin: 0;
+        }
+        body {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            background-color: #167341; /* Color de fondo para todo el cuerpo */
+        }
+        .content {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        .content-wrapper {
+            flex: 1;
+        }
+        .hero {
+            /* Ajusta esta altura según necesites */
+            height: auto; 
+        }
+        .hero-body {
+            /* Asegúrate de que no haya demasiado padding o margen que esté empujando el contenido hacia abajo */
+            padding: 1rem;
+        }
+        .footer {
+            background-color: #333333; /* Color de fondo */
+            padding: 2rem 1rem; /* Espaciado interior */
+            color: white; /* Color del texto */
+            text-align: center;
+        }        
+        .footer a {
+            color: white; /* Color de los enlaces */
+            margin: 0 10px; /* Espaciado entre enlaces */
+            text-decoration: none; /* Sin subrayado */
+        }
+        
+        .footer a:hover {
+            text-decoration: underline; /* Subrayado al pasar el mouse */
+        }
+        
+        .footer-icons {
+            margin-top: 1rem; /* Espacio adicional encima de los íconos */
+        }
+        
+        /* Estilos para los íconos de redes sociales (ajusta según tus necesidades) */
+        .icon {
+            display: inline-block;
+            margin: 0 5px;
+            color: white;
+            font-size: 1.5rem; /* Tamaño de los íconos */
+        }
+
+    </style>
 </head>
 <body>
-
     <nav class="navbar is-dark" role="navigation" aria-label="main navigation">
         <div class="navbar-brand">
             <a class="navbar-item" href="{% url 'index' %}">
@@ -23,14 +79,6 @@
                 <!-- Links comunes a todos los usuarios -->
                 <a class="navbar-item">¿Quiénes somos?</a>
                 <a class="navbar-item">Contacto</a>
-    
-                {% if user.is_authenticated %}
-                    <!-- Links para usuarios autenticados -->
-                    <a class="navbar-item">Subir Oferta</a>
-                    <a class="navbar-item">Ver Ofertas</a>
-                    <a class="navbar-item">Ver Perfil</a>
-                    <a class="navbar-item" href="{% url 'logout' %}">Logout</a>
-                {% endif %}
             </div>
         </div>
     </nav>
@@ -146,5 +194,48 @@
             </div>
         </div>
     </section>
+
+    <footer class="footer">
+        <p>© Truequeapp - All Rights Reserved</p>
+        <div class="footer-links">
+            <a href="#">Acerca de</a>
+            <a href="#">Contacto</a>
+            <!-- Agrega más enlaces si lo deseas -->
+        </div>
+        <div class="footer-icons">
+            <!-- Ejemplo de íconos, puedes usar una librería como FontAwesome -->
+            <a href="#" class="icon"><i class="fab fa-facebook"></i></a>
+            <a href="#" class="icon"><i class="fab fa-twitter"></i></a>
+            <a href="#" class="icon"><i class="fab fa-instagram"></i></a>
+            <!-- Agrega más íconos de redes sociales si lo deseas -->
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Obtén todas las "navbar-burger" elementos
+            const $navbarBurgers = Array.prototype.slice.call(document.querySelectorAll('.navbar-burger'), 0);
+    
+            // Verifica si hay navbar burgers
+            if ($navbarBurgers.length > 0) {
+    
+                // Añade un evento de clic en cada uno
+                $navbarBurgers.forEach(el => {
+                    el.addEventListener('click', () => {
+    
+                        // Obtiene el valor del atributo "data-target"
+                        const target = el.dataset.target;
+                        const $target = document.getElementById(target);
+    
+                        // Alterna las clases "is-active" en el "navbar-burger" y el "navbar-menu"
+                        el.classList.toggle('is-active');
+                        $target.classList.toggle('is-active');
+    
+                    });
+                });
+            }
+        });
+    </script>
+
 </body>
 </html>
