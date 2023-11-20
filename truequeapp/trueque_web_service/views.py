@@ -1,3 +1,4 @@
+from gettext import translation
 from django.contrib.auth.forms import AuthenticationForm
 from django.shortcuts import render, redirect
 from django.contrib.auth import login
@@ -82,10 +83,22 @@ def view_items(request):
 def initiate_trade(request, item_id):
     item_to_trade = get_object_or_404(Item, id=item_id, active=True)
     user_items = Item.objects.filter(user=request.user, active=True).exclude(id=item_id)
-
+    
     if request.method == 'POST':
         responder_item_id = request.POST.get('responder_item')
         responder_item = get_object_or_404(Item, id=responder_item_id, user=request.user, active=True)
+
+        existing_trade = Trade.objects.filter(
+        initiator=request.user,
+        initiator_item=item_to_trade,
+        receiver=receiver,
+        responder_item=responder_item,
+        status='initiated'
+        ).exists()
+
+        if existing_trade:
+            messages.error(request, 'A trade offer for these items already exists.')
+            return redirect('some_view_name')  # Redirect to a suitable view
 
         # Set the receiver to the owner of the item_to_trade
         receiver = item_to_trade.user
@@ -117,10 +130,21 @@ def respond_to_trade(request):
         if 'accept' in request.POST:
             trade.status = 'completed'
             trade.save()
-            # Logic to handle the exchange of items
+            
+            # Logic to swap the items
+            initiator_item = trade.initiator_item
+            responder_item = trade.responder_item
+            
+            # Swap the owners
+            initiator_item.user, responder_item.user = responder_item.user, initiator_item.user
+            
+            # Save the changes
+            initiator_item.save()
+            responder_item.save()
+            
         elif 'decline' in request.POST:
             trade.status = 'cancelled'
             trade.save()
-        return redirect('trade_history')  # Redirect to a page showing all trade history
+        return redirect('index')  # Redirect to a page showing all trade history
     return render(request, 'items/respond_to_trade.html', {'trade_offers': trade_offers})
 
