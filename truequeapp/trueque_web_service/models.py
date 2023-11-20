@@ -37,20 +37,24 @@ class LoginAttempt(models.Model):
     custom_user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     timestamp = models.DateTimeField(auto_now_add=True)
 
+
 # Modelo Trade
 class Trade(models.Model):
-    status = models.CharField(max_length=255)
+    STATUS_CHOICES = [
+        ('initiated', 'Initiated'),
+        ('pending', 'Pending'),
+        ('completed', 'Completed'),
+        ('cancelled', 'Cancelled'),
+    ]
+    status = models.CharField(max_length=255, choices=STATUS_CHOICES, default='initiated')
     date_initiated = models.DateTimeField(auto_now_add=True)
     active = models.BooleanField(default=True)
+    initiator = models.ForeignKey(CustomUser, related_name='initiated_trades', on_delete=models.CASCADE)
+    receiver = models.ForeignKey(CustomUser, related_name='receiver_trades', on_delete=models.CASCADE, null=True, blank=True)
+    initiator_item = models.ForeignKey('Item', related_name='trades_as_initiator', on_delete=models.SET_NULL, null=True)
+    responder_item = models.ForeignKey('Item', related_name='trades_as_responder', on_delete=models.SET_NULL, null=True)
 
-# Modelo UserTrade
-class UserTrade(models.Model):
-    custom_user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
-    trade = models.ForeignKey(Trade, on_delete=models.CASCADE)
-    role = models.CharField(max_length=255, blank=True)
 
-    class Meta:
-        unique_together = (('custom_user', 'trade'),)
 
 # Modelo Item
 class Item(models.Model):
@@ -63,3 +67,5 @@ class Item(models.Model):
     tags = models.CharField(max_length=255, blank=True)
     date_posted = models.DateTimeField(auto_now_add=True)
     active = models.BooleanField(default=True)
+
+

@@ -1,11 +1,17 @@
 from django.contrib.auth.forms import AuthenticationForm
 from django.shortcuts import render, redirect
 from django.contrib.auth import login
-from .forms import CustomUserCreationForm, ItemForm
 from django.contrib.auth.decorators import login_required
+from django.shortcuts import render, redirect, get_object_or_404
 from django.utils import timezone
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
-from .models import Item
+from .models import Item, Trade, CustomUser
+from .forms import CustomUserCreationForm, ItemForm
+from .forms import TradeForm
+from django.contrib import messages
+
+
+
 
 def index(request):
     return render(request, 'accounts/index.html')
@@ -71,3 +77,50 @@ def view_items(request):
         items = paginator.page(paginator.num_pages)
 
     return render(request, 'items/view_items.html', {'page_obj': items})
+
+@login_required
+def initiate_trade(request, item_id):
+    item_to_trade = get_object_or_404(Item, id=item_id, active=True)
+    user_items = Item.objects.filter(user=request.user, active=True).exclude(id=item_id)
+
+    if request.method == 'POST':
+        responder_item_id = request.POST.get('responder_item')
+        responder_item = get_object_or_404(Item, id=responder_item_id, user=request.user, active=True)
+
+        # Set the receiver to the owner of the item_to_trade
+        receiver = item_to_trade.user
+
+        trade = Trade(
+            initiator=request.user,
+            initiator_item=item_to_trade,
+            receiver=receiver,
+            responder_item=responder_item
+        )
+        print(request.POST)
+        trade.save()
+        messages.success(request, 'Trade offer has been sent.')
+        return redirect('accounts/index.html')  # Replace with your success URL
+    else:
+        # If it's a GET request, just show the form
+        messages.error(request, 'There was an error with your submission.')
+        return render(request, 'items/initiate_trade.html', {'item_to_trade': item_to_trade, 'user_items': user_items})
+
+
+
+
+@login_required
+def respond_to_trade(request):
+    trade_offers = Trade.objects.filter(receiver=request.user, status='initiated')
+    if request.method == 'POST':
+        trade_id = request.POST.get('trade_id')
+        trade = get_object_or_404(Trade, id=trade_id, receiver=request.user, status='initiated')
+        if 'accept' in request.POST:
+            trade.status = 'completed'
+            trade.save()
+            # Logic to handle the exchange of items
+        elif 'decline' in request.POST:
+            trade.status = 'cancelled'
+            trade.save()
+        return redirect('trade_history')  # Redirect to a page showing all trade history
+    return render(request, 'items/respond_to_trade.html', {'trade_offers': trade_offers})
+

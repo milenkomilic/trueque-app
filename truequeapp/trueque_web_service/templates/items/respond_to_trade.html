@@ -2,10 +2,9 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Lista de Items</title>
+    <title>Welcome to Truequeapp</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.9.3/css/bulma.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
-
     <style>
         html, body {
             height: 100%;
@@ -60,43 +59,10 @@
             color: white;
             font-size: 1.5rem; /* Tamaño de los íconos */
         }
-        .card {
-            display: flex;
-            flex-direction: column;
-            height: 100%;
-        }
-        
-        .card-content {
-            flex-grow: 1;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-        }
-        
-        .card-footer {
-            background-color: white;
-            border-top: none;
-        }
-        
-        .card-footer-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        
-        .card-footer .button {
-            margin-right: 10px;
-        }
-        
-        .image img {
-            display: block;
-            width: 100%;
-            height: auto;
-        }
+
     </style>
 </head>
 <body>
-
     <nav class="navbar is-dark" role="navigation" aria-label="main navigation">
         <div class="navbar-brand">
             <a class="navbar-item" href="{% url 'index' %}">
@@ -125,71 +91,44 @@
         </div>
     </nav>
 
-    <div class="content-wrapper">
-        <section class="hero custom-green-background is-medium">
-            <div class="hero-body">
-                <div class="container">
-                    <h1 class="title">Items</h1>
-                    <div class="columns is-multiline">
-                        {% for item in page_obj %}
-                            <div class="column is-one-quarter">
-                                <div class="card">
-                                    <div class="card-image">
-                                        <figure class="image is-4by3">
-                                            <img src="{{ item.image_url }}" alt="{{ item.title }}"> <!-- Asumiendo que tienes una url de la imagen -->
-                                        </figure>
-                                    </div>
-                                    <div class="card-content">
-                                        <div class="media">
-                                            <div class="media-content">
-                                                <p class="title is-4">{{ item.title }}</p>
-                                                <p class="subtitle is-6">{{ item.user }}</p>
-                                                <p class="subtitle is-6">{{ item.location }}</p>
-                                            </div>
-                                        </div>
-    
-                                        <div class="content">
-                                            {{ item.description|truncatewords:30 }}
-                                            <br>
-                                            <time datetime="{{ item.date_posted }}">{{ item.date_posted }}</time>
-                                        </div>
-                                    </div>
-                                    <footer class="card-footer">
-                                        <p class="card-footer-item">
-                                            <span class="title is-3">{{ item.price }}</span>
-                                        </p>
-                                        {% if user.is_authenticated and item.user != user %}
-                                        <a href="{% url 'initiate_trade' item.id %}" class="button is-primary">Cambiar</a>
-                                        {% endif %}
-                                    </footer>
-                                </div>
-                            </div>
-                        {% empty %}
-                            <p>No hay items disponibles.</p>
-                        {% endfor %}
+    {% block content %}
+        <div class="container">
+            <h1 class="title">Trade Offers</h1>
+            {% for trade in trade_offers %}
+            <div class="box">
+                <article class="media">
+                    <div class="media-left">
+                        <!-- Image of the item being offered -->
+                        <figure class="image is-64x64">
+                            <img src="{{ trade.initiator_item.image_url }}" alt="Image of {{ trade.initiator_item.title }}">
+                        </figure>
                     </div>
-                        <nav class="pagination" role="navigation" aria-label="pagination">
-                            {% if page_obj.has_previous %}
-                                <a href="?page={{ page_obj.previous_page_number }}" class="pagination-previous">Anterior</a>
-                            {% endif %}
-                            {% if page_obj.has_next %}
-                                <a href="?page={{ page_obj.next_page_number }}" class="pagination-next">Siguiente</a>
-                            {% endif %}
-                            <ul class="pagination-list">
-                                {% for num in page_obj.paginator.page_range %}
-                                    {% if page_obj.number == num %}
-                                        <li><a class="pagination-link is-current">{{ num }}</a></li>
-                                    {% else %}
-                                        <li><a href="?page={{ num }}" class="pagination-link">{{ num }}</a></li>
-                                    {% endif %}
-                                {% endfor %}
-                            </ul>
-                        </nav>
-                </div>
+                    <div class="media-content">
+                        <div class="content">
+                            <p>
+                                <strong>{{ trade.initiator_item.title }}</strong> <br>
+                                Offered by: {{ trade.initiator.username }} <br>
+                                Description: {{ trade.initiator_item.description }} <br>
+                                Status: {{ trade.status }}
+                            </p>
+                        </div>
+                    </div>
+                    <div class="media-right">
+                        <form method="post">
+                            {% csrf_token %}
+                            <input type="hidden" name="trade_id" value="{{ trade.id }}">
+                            <button class="button is-success" type="submit" name="accept">Accept</button>
+                            <button class="button is-danger" type="submit" name="decline">Decline</button>
+                        </form>
+                    </div>
+                </article>
             </div>
-        </section>
-    </div>
-    
+            {% empty %}
+            <p>No trade offers at this moment.</p>
+            {% endfor %}
+        </div>
+    {% endblock %}
+
     <footer class="footer">
         <p>© Truequeapp - All Rights Reserved</p>
         <div class="footer-links">
@@ -205,7 +144,6 @@
             <!-- Agrega más íconos de redes sociales si lo deseas -->
         </div>
     </footer>
-    
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
@@ -232,6 +170,5 @@
             }
         });
     </script>
-
 </body>
 </html>

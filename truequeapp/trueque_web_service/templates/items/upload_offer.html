@@ -101,9 +101,9 @@
                                     <label class="label" for="id_{{ field.name }}">{{ field.label }}</label>
                                     <div class="control">
                                         {% if field.name == 'description' %}
-                                            <textarea class="textarea" id="id_{{ field.name }}" name="{{ field.name }}" rows="4">{{ field.value }}</textarea>
+                                            <textarea class="textarea" id="id_{{ field.name }}" name="{{ field.name }}" rows="4"></textarea>
                                         {% else %}
-                                            <input class="{{ field.field.widget.input_type }}" id="id_{{ field.name }}" name="{{ field.name }}" value="{{ field.value }}" class="input">
+                                            <input class="{{ field.field.widget.input_type }}" id="id_{{ field.name }}" name="{{ field.name }}" class="input">
                                         {% endif %}
                                         <!-- Aquí se eliminaron los íconos -->
                                     </div>

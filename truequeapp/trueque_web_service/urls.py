@@ -9,4 +9,6 @@ urlpatterns = [
     path('user_profile/', views.user_profile_view, name='user_profile'),
     path('upload_item/', views.upload_item_view, name='upload_item'),
     path('view_items/', views.view_items, name='view_items'),
+    path('initiate_trade/<int:item_id>/', views.initiate_trade, name='initiate_trade'),
+    path('respond_to_trade/', views.respond_to_trade, name='respond_to_trade'),
 ]

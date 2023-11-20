@@ -1,7 +1,13 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from .models import CustomUser
-from .models import Item
+from .models import Item, Trade
+
+
+class TradeForm(forms.ModelForm):
+    class Meta:
+        model = Trade
+        fields = ['responder_item']
 
 class ItemForm(forms.ModelForm):
     class Meta:

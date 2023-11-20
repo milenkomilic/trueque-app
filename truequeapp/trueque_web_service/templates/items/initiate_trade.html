@@ -2,10 +2,9 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Lista de Items</title>
+    <title>Welcome to Truequeapp</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.9.3/css/bulma.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
-
     <style>
         html, body {
             height: 100%;
@@ -60,43 +59,10 @@
             color: white;
             font-size: 1.5rem; /* Tamaño de los íconos */
         }
-        .card {
-            display: flex;
-            flex-direction: column;
-            height: 100%;
-        }
-        
-        .card-content {
-            flex-grow: 1;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-        }
-        
-        .card-footer {
-            background-color: white;
-            border-top: none;
-        }
-        
-        .card-footer-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        
-        .card-footer .button {
-            margin-right: 10px;
-        }
-        
-        .image img {
-            display: block;
-            width: 100%;
-            height: auto;
-        }
+
     </style>
 </head>
 <body>
-
     <nav class="navbar is-dark" role="navigation" aria-label="main navigation">
         <div class="navbar-brand">
             <a class="navbar-item" href="{% url 'index' %}">
@@ -125,66 +91,78 @@
         </div>
     </nav>
 
-    <div class="content-wrapper">
+    <div class="content">
         <section class="hero custom-green-background is-medium">
             <div class="hero-body">
-                <div class="container">
-                    <h1 class="title">Items</h1>
-                    <div class="columns is-multiline">
-                        {% for item in page_obj %}
-                            <div class="column is-one-quarter">
-                                <div class="card">
-                                    <div class="card-image">
-                                        <figure class="image is-4by3">
-                                            <img src="{{ item.image_url }}" alt="{{ item.title }}"> <!-- Asumiendo que tienes una url de la imagen -->
-                                        </figure>
+                <div class="container has-text-centered">
+                    {% if messages %}
+                        {% for message in messages %}
+                            <div class="notification {% if message.tags %}is-{{ message.tags }}{% endif %}">
+                                {{ message }}
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+    
+                    {% if user.is_authenticated %}
+                        {% block content %}
+                        <div class="container">
+                            <div class="columns">
+                                <!-- Column for the item being offered for trade -->
+                                <div class="column is-half">
+                                    <h2 class="title is-3">Item to Trade</h2>
+                                    <div class="card">
+                                        <!-- Assume that item_to_trade is the context variable for the item being offered -->
+                                        <div class="card-image">
+                                            <figure class="image is-4by3">
+                                                <img src="{{ item_to_trade.image_url }}" alt="Image of {{ item_to_trade.title }}">
+                                            </figure>
+                                        </div>
+                                        <div class="card-content">
+                                            <p class="title is-4">{{ item_to_trade.title }}</p>
+                                            <p class="subtitle is-6">{{ item_to_trade.description }}</p>
+                                            <!-- Other item details here -->
+                                        </div>
+                                        <footer class="card-footer">
+                                            <p class="card-footer-item">
+                                                Price: <span class="tag is-success">{{ item_to_trade.price }}</span>
+                                            </p>
+                                        </footer>
                                     </div>
-                                    <div class="card-content">
-                                        <div class="media">
-                                            <div class="media-content">
-                                                <p class="title is-4">{{ item.title }}</p>
-                                                <p class="subtitle is-6">{{ item.user }}</p>
-                                                <p class="subtitle is-6">{{ item.location }}</p>
+                                </div>
+                                
+                                <!-- Column for the current user's items to offer in trade -->
+                                <div class="column is-half">
+                                    <h2 class="title is-3">Your Items</h2>
+                                    <!-- The action URL will need to be updated to match the correct view and routing in your urls.py -->
+                                    <form method="post" action="{% url 'initiate_trade' item_to_trade.id %}">
+                                        {% csrf_token %}
+                                        <div class="field">
+                                            <label class="label">Choose your item to offer:</label>
+                                            <div class="control">
+                                                <div class="select is-fullwidth">
+                                                    <select name="responder_item">
+                                                        {% for item in user_items %}
+                                                            <option value="{{ item.id }}">{{ item.title }}</option>
+                                                        {% endfor %}
+                                                    </select>
+                                                </div>
                                             </div>
                                         </div>
-    
-                                        <div class="content">
-                                            {{ item.description|truncatewords:30 }}
-                                            <br>
-                                            <time datetime="{{ item.date_posted }}">{{ item.date_posted }}</time>
+                                        <div class="control">
+                                            <button type="submit" class="button is-link">Offer Item for Trade</button>
                                         </div>
-                                    </div>
-                                    <footer class="card-footer">
-                                        <p class="card-footer-item">
-                                            <span class="title is-3">{{ item.price }}</span>
-                                        </p>
-                                        {% if user.is_authenticated and item.user != user %}
-                                        <a href="{% url 'initiate_trade' item.id %}" class="button is-primary">Cambiar</a>
-                                        {% endif %}
-                                    </footer>
+                                    </form>
                                 </div>
                             </div>
-                        {% empty %}
-                            <p>No hay items disponibles.</p>
-                        {% endfor %}
-                    </div>
-                        <nav class="pagination" role="navigation" aria-label="pagination">
-                            {% if page_obj.has_previous %}
-                                <a href="?page={{ page_obj.previous_page_number }}" class="pagination-previous">Anterior</a>
-                            {% endif %}
-                            {% if page_obj.has_next %}
-                                <a href="?page={{ page_obj.next_page_number }}" class="pagination-next">Siguiente</a>
-                            {% endif %}
-                            <ul class="pagination-list">
-                                {% for num in page_obj.paginator.page_range %}
-                                    {% if page_obj.number == num %}
-                                        <li><a class="pagination-link is-current">{{ num }}</a></li>
-                                    {% else %}
-                                        <li><a href="?page={{ num }}" class="pagination-link">{{ num }}</a></li>
-                                    {% endif %}
-                                {% endfor %}
-                            </ul>
-                        </nav>
+                        </div>
+                        {% endblock %}
+                    {% else %}
+                        <div class="buttons is-centered">
+                            <a href="{% url 'login' %}" class="button is-light">Login</a>
+                            <a href="{% url 'signup' %}" class="button is-dark">Sign Up</a>
+                        </div>
+                        <p>El usuario no está autenticado</p>
+                    {% endif %}
                 </div>
             </div>
         </section>
@@ -205,7 +183,6 @@
             <!-- Agrega más íconos de redes sociales si lo deseas -->
         </div>
     </footer>
-    
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
@@ -232,6 +209,5 @@
             }
         });
     </script>
-
 </body>
 </html>
