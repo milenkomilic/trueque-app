@@ -9,6 +9,7 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from .models import Item, Trade, CustomUser
 from .forms import CustomUserCreationForm, ItemForm
 from .forms import TradeForm
+from django.db.models import Q, F
 from django.contrib import messages
 
 
@@ -64,8 +65,20 @@ def upload_item_view(request):
 
 @login_required
 def view_items(request):
-    items_list = Item.objects.all()  # Asegúrate de que esto obtiene los items correctos
-    paginator = Paginator(items_list, 4)  # Muestra 10 items por página
+    items_list = Item.objects.exclude(
+        Q(trade__status='completed') |  # Excluir ítems cuyo trade está completado
+        (
+            (Q(user_id=F('trade__receiver_id')) | Q(user_id=F('trade__initiator_id'))) &  # Ítems del usuario 1 o donde el usuario 1 es el receptor
+            (
+                Q(trade__status='cancelled') |  # y el trade está cancelado
+                Q(trade__status='initiated')  # o el trade está iniciado
+            )
+        )
+    )
+
+    items_list = items_list.exclude(Q(user=request.user))
+
+    paginator = Paginator(items_list, 10)
 
     page = request.GET.get('page')
     try:
@@ -87,21 +100,19 @@ def initiate_trade(request, item_id):
     if request.method == 'POST':
         responder_item_id = request.POST.get('responder_item')
         responder_item = get_object_or_404(Item, id=responder_item_id, user=request.user, active=True)
+        # Set the receiver to the owner of the item_to_trade
+        receiver = item_to_trade.user
 
         existing_trade = Trade.objects.filter(
-        initiator=request.user,
-        initiator_item=item_to_trade,
-        receiver=receiver,
-        responder_item=responder_item,
-        status='initiated'
+            initiator=request.user,
+            initiator_item=item_to_trade,
+            receiver=receiver,
+            responder_item=responder_item
         ).exists()
 
         if existing_trade:
             messages.error(request, 'A trade offer for these items already exists.')
             return redirect('some_view_name')  # Redirect to a suitable view
-
-        # Set the receiver to the owner of the item_to_trade
-        receiver = item_to_trade.user
 
         trade = Trade(
             initiator=request.user,
@@ -109,14 +120,18 @@ def initiate_trade(request, item_id):
             receiver=receiver,
             responder_item=responder_item
         )
-        print(request.POST)
+
         trade.save()
+
+        item_to_trade.trade = trade
+        responder_item.trade = trade
+        item_to_trade.save()
+        responder_item.save()
+
         messages.success(request, 'Trade offer has been sent.')
         return redirect('accounts/index.html')  # Replace with your success URL
-    else:
-        # If it's a GET request, just show the form
-        messages.error(request, 'There was an error with your submission.')
-        return render(request, 'items/initiate_trade.html', {'item_to_trade': item_to_trade, 'user_items': user_items})
+    
+    return render(request, 'items/initiate_trade.html', {'item_to_trade': item_to_trade, 'user_items': user_items})
 
 
 
