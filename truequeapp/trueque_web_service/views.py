@@ -9,6 +9,7 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from .models import Item, Trade, CustomUser
 from .forms import CustomUserCreationForm, ItemForm
 from .forms import TradeForm
+from django.db.models import Q, F
 from django.contrib import messages
 from django.db.models import Q, F
 
@@ -102,6 +103,8 @@ def initiate_trade(request, item_id):
         responder_item = get_object_or_404(Item, id=responder_item_id, user=request.user, active=True)
         # Set the receiver to the owner of the item_to_trade
         receiver = item_to_trade.user
+        # Set the receiver to the owner of the item_to_trade
+        receiver = item_to_trade.user
 
         existing_trade = Trade.objects.filter(
         initiator=request.user,
@@ -121,6 +124,12 @@ def initiate_trade(request, item_id):
             responder_item=responder_item
         )
         trade.save()
+
+        item_to_trade.trade = trade
+        responder_item.trade = trade
+        item_to_trade.save()
+        responder_item.save()
+
 
         item_to_trade.trade = trade
         responder_item.trade = trade
