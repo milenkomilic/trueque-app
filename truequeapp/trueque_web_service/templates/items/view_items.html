@@ -110,16 +110,17 @@
         </div>
         <div id="navbarBasicExample" class="navbar-menu">
             <div class="navbar-start">
-                <!-- Links comunes a todos los usuarios -->
-                <a class="navbar-item">¿Quiénes somos?</a>
-                <a class="navbar-item">Contacto</a>
-    
                 {% if user.is_authenticated %}
                     <!-- Links para usuarios autenticados -->
-                    <a class="navbar-item" href="{% url 'upload_item' %}">Subir Oferta</a>
-                    <a class="navbar-item" href="{% url 'view_items' %}">Ver Ofertas</a>
-                    <a class="navbar-item" href="{% url 'user_profile' %}">Ver Perfil</a>
-                    <a class="navbar-item" href="{% url 'logout' %}">Logout</a>
+                    <a class="navbar-item" href="{% url 'user_profile' %}">Profile</a>
+                    <a class="navbar-item" href="{% url 'upload_item' %}">Upload</a>
+                    <a class="navbar-item" href="{% url 'view_items' %}">Market</a>
+                    <a class="navbar-item" href="{% url 'respond_to_trade' %}">Trades</a>
+                {% endif %}
+                <!-- Links comunes a todos los usuarios -->
+                <a class="navbar-item">Contact</a>
+                {% if user.is_authenticated %}
+                <a class="navbar-item" href="{% url 'logout' %}">Logout</a>
                 {% endif %}
             </div>
         </div>
