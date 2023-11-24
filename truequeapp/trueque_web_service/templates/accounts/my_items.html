@@ -8,36 +8,65 @@
         html, body {
             height: 100%;
             margin: 0;
-        }
-        body {
             display: flex;
             flex-direction: column;
             min-height: 100vh;
-            background-color: #167341; /* Color de fondo */
+            background-color: #167341;
         }
         .section {
             flex: 1;
             display: flex;
             flex-direction: column;
+            height: 100%; /* Esto asegura que tome toda la altura disponible */
         }
+        /* Asegúrate de que el container también tenga el ancho adecuado */
         .container {
-            width: 80%;
-            margin: auto;
+            width: 100%; /* O el ancho que prefieras */
+            /* Más estilos si es necesario */
         }
-        .card {
-            box-shadow: 0 2px 3px rgba(10, 10, 10, 0.1); /* Sombra para las tarjetas */
+        .content {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh; /* Esto establece una altura mínima basada en la altura de la ventana */
         }
-        .card-footer-item {
-            background-color: #fff;
+        .content-wrapper {
+            flex: 1;
         }
-        .card-footer-item:hover {
-            background-color: #f5f5f5;
+        .hero {
+            /* Ajusta esta altura según necesites */
+            height: auto; 
+        }
+        .hero-body {
+            /* Asegúrate de que no haya demasiado padding o margen que esté empujando el contenido hacia abajo */
+            padding: 1rem;
         }
         .footer {
-            background-color: #333333; /* Color de fondo del pie de página */
-            color: white; /* Color del texto del pie de página */
+            background-color: #333333; /* Color de fondo */
+            padding: 2rem 1rem; /* Espaciado interior */
+            color: white; /* Color del texto */
             text-align: center;
-            padding: 2rem 1rem;
+        }        
+        .footer a {
+            color: white; /* Color de los enlaces */
+            margin: 0 10px; /* Espaciado entre enlaces */
+            text-decoration: none; /* Sin subrayado */
+        }
+        
+        .footer a:hover {
+            text-decoration: underline; /* Subrayado al pasar el mouse */
+        }
+        
+        .footer-icons {
+            margin-top: 1rem; /* Espacio adicional encima de los íconos */
+        }
+        
+        /* Estilos para los íconos de redes sociales (ajusta según tus necesidades) */
+        .icon {
+            display: inline-block;
+            margin: 0 5px;
+            color: white;
+            font-size: 1.5rem; /* Tamaño de los íconos */
         }
     </style>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -72,8 +101,6 @@
         </div>
     </nav>
 
-    <!-- Navbar aquí -->
-
     <section class="section">
         <div class="container">
             <h1 class="title" style="color: white;">My Items</h1>
@@ -103,7 +130,47 @@
         </div>
     </section>
 
-    <!-- Footer aquí -->
+    <footer class="footer">
+        <p>© Truequeapp - All Rights Reserved</p>
+        <div class="footer-links">
+            <a href="#">Acerca de</a>
+            <a href="#">Contacto</a>
+            <!-- Agrega más enlaces si lo deseas -->
+        </div>
+        <div class="footer-icons">
+            <!-- Ejemplo de íconos, puedes usar una librería como FontAwesome -->
+            <a href="#" class="icon"><i class="fab fa-facebook"></i></a>
+            <a href="#" class="icon"><i class="fab fa-twitter"></i></a>
+            <a href="#" class="icon"><i class="fab fa-instagram"></i></a>
+            <!-- Agrega más íconos de redes sociales si lo deseas -->
+        </div>
+    </footer>  
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Obtén todas las "navbar-burger" elementos
+            const $navbarBurgers = Array.prototype.slice.call(document.querySelectorAll('.navbar-burger'), 0);
+    
+            // Verifica si hay navbar burgers
+            if ($navbarBurgers.length > 0) {
+    
+                // Añade un evento de clic en cada uno
+                $navbarBurgers.forEach(el => {
+                    el.addEventListener('click', () => {
+    
+                        // Obtiene el valor del atributo "data-target"
+                        const target = el.dataset.target;
+                        const $target = document.getElementById(target);
+    
+                        // Alterna las clases "is-active" en el "navbar-burger" y el "navbar-menu"
+                        el.classList.toggle('is-active');
+                        $target.classList.toggle('is-active');
+    
+                    });
+                });
+            }
+        });
+    </script>
 
 </body>
 <script>
