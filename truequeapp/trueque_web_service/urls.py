@@ -11,4 +11,7 @@ urlpatterns = [
     path('view_items/', views.view_items, name='view_items'),
     path('initiate_trade/<int:item_id>/', views.initiate_trade, name='initiate_trade'),
     path('respond_to_trade/', views.respond_to_trade, name='respond_to_trade'),
+    path('my_items/', views.my_items, name='my_items'),
+    path('update_item/', views.update_item, name='update_item'),
+    path('delete_item/', views.delete_item, name='delete_item'),
 ]

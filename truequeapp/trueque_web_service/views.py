@@ -1,5 +1,6 @@
 from gettext import translation
 from django.contrib.auth.forms import AuthenticationForm
+from django.http import JsonResponse
 from django.shortcuts import render, redirect
 from django.contrib.auth import login
 from django.contrib.auth.decorators import login_required
@@ -12,6 +13,7 @@ from .forms import TradeForm
 from django.db.models import Q, F
 from django.contrib import messages
 from django.db.models import Q, F
+from django.views.decorators.csrf import csrf_exempt
 
 
 
@@ -103,8 +105,6 @@ def initiate_trade(request, item_id):
         responder_item = get_object_or_404(Item, id=responder_item_id, user=request.user, active=True)
         # Set the receiver to the owner of the item_to_trade
         receiver = item_to_trade.user
-        # Set the receiver to the owner of the item_to_trade
-        receiver = item_to_trade.user
 
         existing_trade = Trade.objects.filter(
         initiator=request.user,
@@ -124,12 +124,6 @@ def initiate_trade(request, item_id):
             responder_item=responder_item
         )
         trade.save()
-
-        item_to_trade.trade = trade
-        responder_item.trade = trade
-        item_to_trade.save()
-        responder_item.save()
-
 
         item_to_trade.trade = trade
         responder_item.trade = trade
@@ -169,3 +163,43 @@ def respond_to_trade(request):
         return redirect('index')  # Redirect to a page showing all trade history
     return render(request, 'items/respond_to_trade.html', {'trade_offers': trade_offers})
 
+@login_required
+def my_items(request):
+    items = Item.objects.filter(user=request.user)
+    return render(request, 'accounts/my_items.html', {'items': items})
+
+
+
+@csrf_exempt
+@login_required
+def update_item(request):
+    if request.method == 'POST':
+        item_id = request.POST.get('id')
+        title = request.POST.get('title')
+        price = request.POST.get('price')
+        description = request.POST.get('description')
+        active = request.POST.get('active') == 'true'
+
+        # Encuentra y actualiza el ítem
+        item = get_object_or_404(Item, id=item_id, user=request.user)
+        item.title = title
+        item.price = price
+        item.description = description
+        item.active = active
+        item.save()
+
+        return JsonResponse({'status': 'success'})
+
+    return JsonResponse({'status': 'error'}, status=400)
+
+@csrf_exempt
+@login_required
+def delete_item(request):
+    if request.method == 'POST':
+        item_id = request.POST.get('item_id')
+        item = get_object_or_404(Item, id=item_id, user=request.user)  # Asegurar que el ítem pertenece al usuario
+
+        item.delete()
+        return JsonResponse({'status': 'success'})
+
+    return JsonResponse({'status': 'error'}, status=400)
