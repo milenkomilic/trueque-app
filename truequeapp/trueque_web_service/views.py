@@ -1,7 +1,6 @@
 from gettext import translation
 from django.contrib.auth.forms import AuthenticationForm
 from django.http import JsonResponse
-from django.shortcuts import render, redirect
 from django.contrib.auth import login
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect, get_object_or_404
@@ -9,13 +8,13 @@ from django.utils import timezone
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from .models import Item, Trade, CustomUser
 from .forms import CustomUserCreationForm, ItemForm
-from .forms import TradeForm
+from .forms import CustomUserEditForm
 from django.db.models import Q, F
 from django.contrib import messages
 from django.db.models import Q, F
 from django.views.decorators.csrf import csrf_exempt
-
-
+from django.http import JsonResponse, HttpResponse
+from django.views.decorators.http import require_http_methods
 
 def index(request):
     return render(request, 'accounts/index.html')
@@ -168,6 +167,26 @@ def my_items(request):
     items = Item.objects.filter(user=request.user)
     return render(request, 'accounts/my_items.html', {'items': items})
 
+
+@login_required
+@require_http_methods(["GET", "POST"])  # Acepta solo GET y POST requests
+def edit_profile(request):
+    if request.method == 'POST':
+        form = CustomUserEditForm(request.POST, instance=request.user)
+        if form.is_valid():
+            form.save()
+            # Devuelve una respuesta JSON para solicitudes AJAX POST
+            return JsonResponse({'status': 'success', 'message': 'Profile updated successfully!'})
+        else:
+            # Devuelve errores de formulario como respuesta JSON
+            return JsonResponse({'status': 'error', 'errors': form.errors}, status=400)
+    elif request.method == 'GET':
+        # Para solicitudes GET, renderiza la plantilla con el formulario
+        form = CustomUserEditForm(instance=request.user)
+        return render(request, 'accounts/edit_profile.html', {'form': form})
+
+    # Si llegamos aquí, significa que se utilizó un método HTTP inesperado, devuelve un error 405
+    return HttpResponse("Method Not Allowed", status=405)
 
 
 @csrf_exempt

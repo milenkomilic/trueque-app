@@ -4,6 +4,15 @@ from .models import CustomUser
 from .models import Item, Trade
 
 
+class CustomUserEditForm(forms.ModelForm):
+    date_of_birth = forms.DateField(
+        required=True, 
+        widget=forms.DateInput(attrs={'type': 'date'})
+    )
+    class Meta:
+        model = CustomUser
+        fields = ['name', 'lastname', 'lastname_m', 'date_of_birth']
+
 class TradeForm(forms.ModelForm):
     class Meta:
         model = Trade

@@ -1,8 +1,17 @@
+
+
+
+
+
+
+
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
-    <title>Profile</title>
+    <!-- ... tus otros elementos head ... -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.9.3/css/bulma.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
     <style>
@@ -76,9 +85,10 @@
             color: white;
             font-size: 1.5rem; /* Tamaño de los íconos */
         }
-
     </style>
+    <title>Profile</title>
 </head>
+
 <body>
     <nav class="navbar is-dark" role="navigation" aria-label="main navigation">
         <div class="navbar-brand">
@@ -108,48 +118,50 @@
             </div>
         </div>
     </nav>
-
+    
     <section class="section">
         <div class="container">
-            <h1 class="title has-text-centered" style="color: white;">Profile</h1>
+            <h1 class="title has-text-centered" style="color: white;">Edit Profile</h1>
             <div class="box">
-                <article class="media">
-                    <div class="media-content">
-                        <div class="content">
-                            <p class="title is-4">Full Name</p>
-                            <p class="subtitle is-6">{{ user.name }} {{ user.lastname }} {{ user.lastname_m }}</p>
-                        </div>
+                <div class="field">
+                    <label class="label">Name</label>
+                    <div class="control">
+                        <input class="input" type="text" id="name" placeholder="First Name" value="{{ user.name }}" disabled>
                     </div>
-                </article>
-                <hr>
-                <article class="media">
-                    <div class="media-content">
-                        <div class="content">
-                            <p class="title is-4">Email</p>
-                            <p class="subtitle is-6">{{ user.email }}</p>
-                        </div>
+                </div>
+                
+                <div class="field">
+                    <label class="label">Last Name</label>
+                    <div class="control">
+                        <input class="input" type="text" id="lastname" placeholder="Last Name" value="{{ user.lastname }}" disabled>
                     </div>
-                </article>
-                <hr>
-                <article class="media">
-                    <div class="media-content">
-                        <div class="content">
-                            <p class="title is-4">Date of Birth</p>
-                            <p class="subtitle is-6">{{ user.date_of_birth|date:"Y-m-d" }}</p>
-                        </div>
+                </div>
+                
+                <div class="field">
+                    <label class="label">Second Last Name</label>
+                    <div class="control">
+                        <input class="input" type="text" id="lastname_m" placeholder="Second Last Name" value="{{ user.lastname_m }}" disabled>
                     </div>
-                </article>
-                <article class="media">
-                    <div class="media-content">
-                        <div class="container center">
-                            <a href="{% url 'my_items' %}" class="button is-primary">View my items</a>
-                            <a href="{% url 'edit_profile' %}" class="button is-primary">Edit your profile</a>
-                        </div>
+                </div>
+                
+                <div class="field">
+                    <label class="label">Date of Birth</label>
+                    <div class="control">
+                        <input class="input" type="date" id="date_of_birth" value="{{ user.date_of_birth|date:'Y-m-d' }}" disabled>
                     </div>
-                </article>
+                </div>
+                
+                <div class="field is-grouped is-grouped-centered">
+                    <p class="control">
+                        <a class="button is-primary" id="btn-edit-profile">Edit</a>
+                    </p>
+                    <p class="control">
+                        <a class="button is-light" id="btn-save-profile" style="display: none;">Save</a>
+                    </p>
+                </div>
             </div>
         </div>
-    </section>
+    </section>   
 
     <footer class="footer">
         <p>© Truequeapp - All Rights Reserved</p>
@@ -192,7 +204,62 @@
             }
         });
     </script>
+    <script>
+        // Similar a tu script de my_items.html
+        $(document).ready(function() {
+            $('#btn-edit-profile').click(function(e) {
+                e.preventDefault();
+                // Habilita los campos para edición
+                $('.input').prop('disabled', false);
+                $(this).hide();
+                $('#btn-save-profile').show();
+            });
+            
+            $('#btn-save-profile').click(function(e) {
+                e.preventDefault();
+                // Recoge los valores de los campos
+                let name = $('#name').val();
+                let lastname = $('#lastname').val();
+                let lastname_m = $('#lastname_m').val();
+                let date_of_birth = $('#date_of_birth').val();
+                // ... los otros campos ...
 
-
+                // AJAX call para enviar los datos al servidor
+                $.ajax({
+                    url: '{% url "edit_profile" %}',  // Asegúrate de tener esta URL en tus urls.py
+                    type: 'POST',
+                    headers: { "X-CSRFToken": "{{ csrf_token }}" },  // Asegúrate de enviar el token CSRF
+                    data: {
+                        'name': name,
+                        'lastname': lastname,
+                        'lastname_m': lastname_m,
+                        'date_of_birth': date_of_birth,
+                                            },
+                    success: function(response) {
+                        if(response.status === 'success') {
+                            // Deshabilitar los campos y cambiar los botones de vuelta
+                            $('.input').prop('disabled', true);
+                            $('#btn-save-profile').hide();
+                            $('#btn-edit-profile').show();
+                            alert(response.message);
+                        }
+                    },
+                    error: function(response) {
+                        // Aquí asumimos que la respuesta del servidor es un JSON con un campo 'errors'
+                        var errors = JSON.parse(response.responseText).errors;
+                        var errorMessages = [];
+                        for (var key in errors) {
+                            if (errors.hasOwnProperty(key)) {
+                                errorMessages.push(errors[key]);
+                            }
+                        }
+                        alert("Error: " + errorMessages.join(", "));
+                        // Mostrar los errores en la interfaz de usuario
+                    }
+                });
+                
+            });
+        });
+    </script>
 </body>
 </html>
