@@ -97,40 +97,40 @@ def view_items(request):
 @login_required
 def initiate_trade(request, item_id):
     item_to_trade = get_object_or_404(Item, id=item_id, active=True)
-    user_items = Item.objects.filter(user=request.user, active=True).exclude(id=item_id)
+    user_items = Item.objects.filter(user=request.user, active=True)
     
     if request.method == 'POST':
-        responder_item_id = request.POST.get('responder_item')
-        responder_item = get_object_or_404(Item, id=responder_item_id, user=request.user, active=True)
+        
+        initiator_item = get_object_or_404(Item, id=request.POST.get('responder_item'), user=request.user, active=True)
         # Set the receiver to the owner of the item_to_trade
         receiver = item_to_trade.user
 
         existing_trade = Trade.objects.filter(
-        initiator=request.user,
-        initiator_item=item_to_trade,
+        initiator=initiator_item.user,
+        initiator_item=initiator_item,
         receiver=receiver,
-        responder_item=responder_item
+        responder_item=item_to_trade
         ).exists()
 
         if existing_trade:
             messages.error(request, 'A trade offer for these items already exists.')
-            return redirect('')  # Redirect to a suitable view
+            return redirect('initiate_trade', item_id=item_id)
 
         trade = Trade(
             initiator=request.user,
-            initiator_item=item_to_trade,
+            initiator_item=initiator_item,
             receiver=receiver,
-            responder_item=responder_item
+            responder_item=item_to_trade
         )
         trade.save()
 
         item_to_trade.trade = trade
-        responder_item.trade = trade
+        initiator_item.trade = trade
         item_to_trade.save()
-        responder_item.save()
+        initiator_item.save()
 
         messages.success(request, 'Trade offer has been sent.')
-        return redirect('initiate_trade')
+        return redirect('initiate_trade', item_id=item_id)
     
     return render(request, 'items/initiate_trade.html', {'item_to_trade': item_to_trade, 'user_items': user_items})
 
