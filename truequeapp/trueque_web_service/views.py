@@ -9,9 +9,8 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from .models import Item, Trade, CustomUser
 from .forms import CustomUserCreationForm, ItemForm
 from .forms import CustomUserEditForm
-from django.db.models import Q, F
+from django.db.models import Q, F, Max, OuterRef, Subquery
 from django.contrib import messages
-from django.db.models import Q, F
 from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse, HttpResponse
 from django.views.decorators.http import require_http_methods
@@ -66,16 +65,9 @@ def upload_item_view(request):
 
 @login_required
 def view_items(request):
-    
     items_list = Item.objects.exclude(
-        Q(trade__status='completed') |  # Excluir ítems cuyo trade está completado
-        (
-            (Q(user_id=F('trade__receiver_id')) | Q(user_id=F('trade__initiator_id'))) &  # Ítems del usuario 1 o donde el usuario 1 es el receptor
-            (
-                Q(trade__status='cancelled') |  # y el trade está cancelado
-                Q(trade__status='initiated')  # o el trade está iniciado
-            )
-        )
+        (Q(user_id=F('trade__receiver_id')) | Q(user_id=F('trade__initiator_id'))) &
+        (Q(trade__status='cancelled') | Q(trade__status='initiated') | Q(trade__status='accepted'))
     )
 
     items_list = items_list.exclude(Q(user=request.user))
@@ -100,9 +92,7 @@ def initiate_trade(request, item_id):
     user_items = Item.objects.filter(user=request.user, active=True)
     
     if request.method == 'POST':
-        
         initiator_item = get_object_or_404(Item, id=request.POST.get('responder_item'), user=request.user, active=True)
-        # Set the receiver to the owner of the item_to_trade
         receiver = item_to_trade.user
 
         existing_trade = Trade.objects.filter(
@@ -137,29 +127,38 @@ def initiate_trade(request, item_id):
 
 @login_required
 def respond_to_trade(request):
-    trade_offers = Trade.objects.filter(receiver=request.user, status='initiated')
     if request.method == 'POST':
         trade_id = request.POST.get('trade_id')
-        trade = get_object_or_404(Trade, id=trade_id, receiver=request.user, status='initiated')
+        trade = get_object_or_404(Trade, id=trade_id)
         if 'accept' in request.POST:
-            trade.status = 'completed'
+            trade.status = 'accepted' if trade.status == 'initiated' else 'completed'
+            trade.receiver = trade.initiator
+            trade.initiator = trade.receiver
             trade.save()
-            
-            # Logic to swap the items
-            initiator_item = trade.initiator_item
-            responder_item = trade.responder_item
-            
-            # Swap the owners
-            initiator_item.user, responder_item.user = responder_item.user, initiator_item.user
-            
-            # Save the changes
-            initiator_item.save()
-            responder_item.save()
-            
+
+            if trade.status == 'completed':
+                initiator_item = trade.initiator_item
+                responder_item = trade.responder_item
+                initiator_item.user, responder_item.user = responder_item.user, initiator_item.user
+                initiator_item.save()
+                responder_item.save()
+
+                user_trades = Trade.objects.filter(
+                    Q(reciever=request.user) &
+                    (Q(initiator_item=initiator_item) & Q(responder_item=responder_item)) &
+                    (Q(status='initiated') | Q(status='accepted'))
+                )
+
+                user_trades.update(status='cancelled')
         elif 'decline' in request.POST:
             trade.status = 'cancelled'
             trade.save()
         return redirect('index')  # Redirect to a page showing all trade history
+    
+    trade_offers = Trade.objects.filter(
+        Q(receiver=request.user) & 
+        (Q(status='initiated') | Q(status='accepted'))
+    )
     return render(request, 'items/respond_to_trade.html', {'trade_offers': trade_offers})
 
 @login_required
@@ -169,23 +168,19 @@ def my_items(request):
 
 
 @login_required
-@require_http_methods(["GET", "POST"])  # Acepta solo GET y POST requests
+@require_http_methods(["GET", "POST"])
 def edit_profile(request):
     if request.method == 'POST':
         form = CustomUserEditForm(request.POST, instance=request.user)
         if form.is_valid():
             form.save()
-            # Devuelve una respuesta JSON para solicitudes AJAX POST
             return JsonResponse({'status': 'success', 'message': 'Profile updated successfully!'})
         else:
-            # Devuelve errores de formulario como respuesta JSON
             return JsonResponse({'status': 'error', 'errors': form.errors}, status=400)
     elif request.method == 'GET':
-        # Para solicitudes GET, renderiza la plantilla con el formulario
         form = CustomUserEditForm(instance=request.user)
         return render(request, 'accounts/edit_profile.html', {'form': form})
 
-    # Si llegamos aquí, significa que se utilizó un método HTTP inesperado, devuelve un error 405
     return HttpResponse("Method Not Allowed", status=405)
 
 

@@ -42,7 +42,7 @@ class LoginAttempt(models.Model):
 class Trade(models.Model):
     STATUS_CHOICES = [
         ('initiated', 'Initiated'),
-        ('pending', 'Pending'),
+        ('accepted', 'Accepted'),
         ('completed', 'Completed'),
         ('cancelled', 'Cancelled'),
     ]
