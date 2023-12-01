@@ -157,11 +157,12 @@ def respond_to_trade(request):
                 initiator_item = trade.initiator_item
                 responder_item = trade.responder_item
                 initiator_item.user, responder_item.user = responder_item.user, initiator_item.user
+                messages.success(request, 'Trade accepted successfully.')
                 initiator_item.save()
                 responder_item.save()
 
                 user_trades = Trade.objects.filter(
-                    Q(reciever=request.user) &
+                    Q(receiver=request.user) &
                     (Q(initiator_item=initiator_item) & Q(responder_item=responder_item)) &
                     (Q(status='initiated') | Q(status='accepted'))
                 )
@@ -169,8 +170,9 @@ def respond_to_trade(request):
                 user_trades.update(status='cancelled')
         elif 'decline' in request.POST:
             trade.status = 'cancelled'
+            messages.info(request, 'Trade declined.')
             trade.save()
-        return redirect('index')  # Redirect to a page showing all trade history
+        return redirect('respond_to_trade')
     
     trade_offers = Trade.objects.filter(
         Q(receiver=request.user) & 

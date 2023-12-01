@@ -96,6 +96,15 @@
         <div class="container">
             <h1 class="title">Trade Offers</h1>
             {% for trade in trade_offers %}
+
+                {% if messages %}
+                    {% for message in messages %}
+                        <div class="notification {% if message.tags %}is-{{ message.tags }}{% endif %}">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                {% endif %}
+
             <div class="box">
                 <article class="media">
                     <div class="media-left">

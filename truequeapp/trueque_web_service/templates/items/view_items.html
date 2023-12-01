@@ -93,6 +93,29 @@
             width: 100%;
             height: auto;
         }
+        /* Pagination buttons */
+        .pagination-link, .pagination-next, .pagination-previous {
+            background-color: #ffffff; /* White background */
+            color: #167341; /* Color that matches your site's theme */
+            border: 1px solid #167341; /* Border to make it stand out */
+            text-decoration: none; /* Remove underline */
+            padding: 0.5em 0.75em; /* Padding for spacing */
+            margin: 0.25em; /* Margin for spacing around buttons */
+        }
+
+        /* Current page button */
+        .pagination-link.is-current {
+            background-color: #167341; /* Theme color background */
+            color: #ffffff; /* White text */
+            border-color: #167341;
+        }
+
+        /* Hover effect */
+        .pagination-link:hover, .pagination-next:hover, .pagination-previous:hover {
+            background-color: #145a32; /* Darker shade for hover effect */
+            color: #ffffff;
+            border-color: #145a32;
+        }
     </style>
 </head>
 <body>
