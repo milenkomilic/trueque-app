@@ -36,7 +36,7 @@ class CustomUserCreationForm(UserCreationForm):
         required=True, 
         widget=forms.DateInput(attrs={'type': 'date'})
     )
-    email = forms.EmailField(required=True, unique=True)
+    email = forms.EmailField(required=True)
 
     class Meta:
         model = CustomUser

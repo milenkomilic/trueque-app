@@ -1,4 +1,3 @@
-from gettext import translation
 from django.contrib.auth.forms import AuthenticationForm
 from django.http import JsonResponse
 from django.contrib.auth import login
@@ -6,7 +5,7 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect, get_object_or_404
 from django.utils import timezone
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
-from .models import Item, Trade, CustomUser
+from .models import Item, Trade
 from .forms import CustomUserCreationForm, ItemForm
 from .forms import CustomUserEditForm
 from django.db.models import Q, F, Max, OuterRef, Subquery
@@ -67,12 +66,14 @@ def upload_item_view(request):
 @login_required
 def view_items(request):
     items_list = Item.objects.exclude(
-        (Q(user_id=F('trade__receiver_id')) | Q(user_id=F('trade__initiator_id'))) &
-        (Q(trade__status='cancelled') | Q(trade__status='initiated') | Q(trade__status='accepted'))
-    )
-
-    items_list = items_list.exclude(Q(user=request.user))
-
+        Q(user=request.user) |  # Excluir tus propios ítems
+        Q(active=False) | # Excluir ítems inactivos
+        (
+            Q(trade__initiator=request.user) |
+            Q(trade__receiver=request.user)
+        ) & ~Q(trade__status='completed')
+    ).distinct()
+    
     paginator = Paginator(items_list, 4)
 
     page = request.GET.get('page')
@@ -107,21 +108,10 @@ def my_items(request):
 def initiate_trade(request, item_id):
     item_to_trade = get_object_or_404(Item, id=item_id, active=True)
     user_items = Item.objects.filter(user=request.user, active=True)
-    
+
     if request.method == 'POST':
         initiator_item = get_object_or_404(Item, id=request.POST.get('responder_item'), user=request.user, active=True)
         receiver = item_to_trade.user
-
-        existing_trade = Trade.objects.filter(
-        initiator=initiator_item.user,
-        initiator_item=initiator_item,
-        receiver=receiver,
-        responder_item=item_to_trade
-        ).exists()
-
-        if existing_trade:
-            messages.error(request, 'A trade offer for these items already exists.')
-            return redirect('initiate_trade', item_id=item_id)
 
         trade = Trade(
             initiator=request.user,
@@ -149,8 +139,7 @@ def respond_to_trade(request):
         trade = get_object_or_404(Trade, id=trade_id)
         if 'accept' in request.POST:
             trade.status = 'accepted' if trade.status == 'initiated' else 'completed'
-            trade.receiver = trade.initiator
-            trade.initiator = trade.receiver
+            trade.receiver, trade.initiator = trade.initiator, trade.receiver
             trade.save()
 
             if trade.status == 'completed':

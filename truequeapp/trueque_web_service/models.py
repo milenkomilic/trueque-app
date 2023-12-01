@@ -54,7 +54,14 @@ class Trade(models.Model):
     initiator_item = models.ForeignKey('Item', related_name='trades_as_initiator', on_delete=models.SET_NULL, null=True)
     responder_item = models.ForeignKey('Item', related_name='trades_as_responder', on_delete=models.SET_NULL, null=True)
 
+# Modelo UserTrade
+class UserTrade(models.Model):
+    custom_user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    trade = models.ForeignKey(Trade, on_delete=models.CASCADE)
+    role = models.CharField(max_length=255, blank=True)
 
+    class Meta:
+        unique_together = (('custom_user', 'trade'),)
 
 # Modelo Item
 class Item(models.Model):
@@ -67,5 +74,3 @@ class Item(models.Model):
     tags = models.CharField(max_length=255, blank=True)
     date_posted = models.DateTimeField(auto_now_add=True)
     active = models.BooleanField(default=True)
-
-
