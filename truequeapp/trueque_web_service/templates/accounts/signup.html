@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Welcome to Truequeapp</title>
+    <title>Registro Truequeapp</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.9.3/css/bulma.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
     <style>
@@ -94,12 +94,12 @@
                         </div>
                     {% endif %}
                     <form method="post" class="box">
-                        <h1 class="title has-text-centered">Sign Up</h1>
+                        <h1 class="title has-text-centered">Registro</h1>
                         {% csrf_token %}
 
                         <!-- Campo de Username -->
                         <div class="field">
-                            <label class="label">Username</label>
+                            <label class="label">Nombre de usuario</label>
                             <div class="control">
                                 {{ form.username }}
                                 {% if form.username.errors %}
@@ -112,7 +112,7 @@
 
                         <!-- Campo de Name -->
                         <div class="field">
-                            <label class="label">Name</label>
+                            <label class="label">Nombre personal</label>
                             <div class="control">
                                 {{ form.name }}
                                 {% if form.name.errors %}
@@ -123,7 +123,7 @@
 
                         <!-- Campo de Lastname -->
                         <div class="field">
-                            <label class="label">Lastname</label>
+                            <label class="label">Apellido paterno</label>
                             <div class="control">
                                 {{ form.lastname }}
                                 {% if form.lastname.errors %}
@@ -134,7 +134,7 @@
 
                         <!-- Campo de Lastname Maternal -->
                         <div class="field">
-                            <label class="label">Lastname Maternal</label>
+                            <label class="label">Apellido materno</label>
                             <div class="control">
                                 {{ form.lastname_m }}
                                 {% if form.lastname_m.errors %}
@@ -145,7 +145,7 @@
 
                         <!-- Campo de Date of Birth -->
                         <div class="field">
-                            <label class="label">Date of Birth</label>
+                            <label class="label">Fecha de nacimiento</label>
                             <div class="control">
                                 {{ form.date_of_birth }}
                                 {% if form.date_of_birth.errors %}
@@ -156,7 +156,7 @@
 
                         <!-- Campo de Email -->
                         <div class="field">
-                            <label class="label">Email</label>
+                            <label class="label">Correo electronico</label>
                             <div class="control">
                                 {{ form.email }}
                                 {% if form.email.errors %}
@@ -167,7 +167,7 @@
 
                         <!-- Campos de Contraseña -->
                         <div class="field">
-                            <label class="label">Password</label>
+                            <label class="label">Contraseña</label>
                             <div class="control">
                                 {{ form.password1 }}
                                 {% if form.password1.errors %}
@@ -176,7 +176,7 @@
                             </div>
                         </div>
                         <div class="field">
-                            <label class="label">Password Confirmation</label>
+                            <label class="label">Confirmación de contraseña</label>
                             <div class="control">
                                 {{ form.password2 }}
                                 {% if form.password2.errors %}
@@ -186,9 +186,10 @@
                         </div>
 
                         <!-- Botón de Envío -->
-                        <button class="button is-primary is-fullwidth" type="submit">Sign Up</button>
+                        <button class="button is-primary is-fullwidth" type="submit">Registrarme</button>
                     </form>
-                    <p class="has-text-centered">¿Ya tienes una cuenta? <a href="{% url 'login' %}">Inicia sesión aquí</a></p>
+                    <p class="has-text-centered" style="color: white;">¿Ya tienes una cuenta? <a href="{% url 'login' %}" style="color: yellow;">Inicia sesión aquí</a></p>
+                    <p class="has-text-centered" style="color: white;">¿Perdiste tu contraseña? <a href="{% url 'login' %}" style="color: yellow;">Recuperala aquí</a></p>
                 </div>
             </div>
         </div>

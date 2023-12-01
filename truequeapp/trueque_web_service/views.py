@@ -63,6 +63,7 @@ def upload_item_view(request):
 
     return render(request, 'items/upload_offer.html', {'form': form})
 
+
 @login_required
 def view_items(request):
     items_list = Item.objects.exclude(
@@ -72,7 +73,7 @@ def view_items(request):
 
     items_list = items_list.exclude(Q(user=request.user))
 
-    paginator = Paginator(items_list, 10)
+    paginator = Paginator(items_list, 4)
 
     page = request.GET.get('page')
     try:
@@ -85,6 +86,22 @@ def view_items(request):
         items = paginator.page(paginator.num_pages)
 
     return render(request, 'items/view_items.html', {'page_obj': items})
+
+
+def my_items(request):
+    items = Item.objects.filter(user=request.user)
+    paginator = Paginator(items, 4)
+
+    page = request.GET.get('page')
+    try:
+        items = paginator.page(page)
+    except PageNotAnInteger:
+        items = paginator.page(1)
+    except EmptyPage:
+        items = paginator.page(paginator.num_pages)
+
+    return render(request, 'accounts/my_items.html', {'items': items, 'page_obj': items})
+
 
 @login_required
 def initiate_trade(request, item_id):
@@ -160,11 +177,6 @@ def respond_to_trade(request):
         (Q(status='initiated') | Q(status='accepted'))
     )
     return render(request, 'items/respond_to_trade.html', {'trade_offers': trade_offers})
-
-@login_required
-def my_items(request):
-    items = Item.objects.filter(user=request.user)
-    return render(request, 'accounts/my_items.html', {'items': items})
 
 
 @login_required

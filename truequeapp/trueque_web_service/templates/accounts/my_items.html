@@ -68,6 +68,30 @@
             color: white;
             font-size: 1.5rem; /* Tamaño de los íconos */
         }
+        /* Pagination buttons */
+        .pagination-link, .pagination-next, .pagination-previous {
+            background-color: #ffffff; /* White background */
+            color: #167341; /* Color that matches your site's theme */
+            border: 1px solid #167341; /* Border to make it stand out */
+            text-decoration: none; /* Remove underline */
+            padding: 0.5em 0.75em; /* Padding for spacing */
+            margin: 0.25em; /* Margin for spacing around buttons */
+        }
+
+        /* Current page button */
+        .pagination-link.is-current {
+            background-color: #167341; /* Theme color background */
+            color: #ffffff; /* White text */
+            border-color: #167341;
+        }
+
+        /* Hover effect */
+        .pagination-link:hover, .pagination-next:hover, .pagination-previous:hover {
+            background-color: #145a32; /* Darker shade for hover effect */
+            color: #ffffff;
+            border-color: #145a32;
+        }
+
     </style>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
@@ -126,6 +150,25 @@
                     </div>
                 </div>
             {% endfor %}
+
+            <nav class="pagination" role="navigation" aria-label="pagination">
+                {% if page_obj.has_previous %}
+                    <a href="?page={{ page_obj.previous_page_number }}" class="pagination-previous">Anterior</a>
+                {% endif %}
+                {% if page_obj.has_next %}
+                    <a href="?page={{ page_obj.next_page_number }}" class="pagination-next">Siguiente</a>
+                {% endif %}
+                <ul class="pagination-list">
+                    {% for num in page_obj.paginator.page_range %}
+                        {% if page_obj.number == num %}
+                            <li><a class="pagination-link is-current">{{ num }}</a></li>
+                        {% else %}
+                            <li><a href="?page={{ num }}" class="pagination-link">{{ num }}</a></li>
+                        {% endif %}
+                    {% endfor %}
+                </ul>
+            </nav>            
+
             </div>
         </div>
     </section>
