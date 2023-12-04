@@ -149,71 +149,81 @@
         </div>
     </nav>
 
-    <div class="content-wrapper">
-        <section class="hero custom-green-background is-medium">
-            <div class="hero-body">
-                <div class="container">
-                    <h1 class="title">Items</h1>
-                    <div class="columns is-multiline">
-                        {% for item in page_obj %}
-                            <div class="column is-one-quarter">
-                                <div class="card">
-                                    <div class="card-image">
-                                        <figure class="image is-4by3">
-                                            <img src="{{ item.image_url }}" alt="{{ item.title }}"> <!-- Asumiendo que tienes una url de la imagen -->
-                                        </figure>
-                                    </div>
-                                    <div class="card-content">
-                                        <div class="media">
-                                            <div class="media-content">
-                                                <p class="title is-4">{{ item.title }}</p>
-                                                <p class="subtitle is-6">{{ item.user }}</p>
-                                                <p class="subtitle is-6">{{ item.location }}</p>
-                                            </div>
-                                        </div>
-    
-                                        <div class="content">
-                                            {{ item.description|truncatewords:30 }}
-                                            <br>
-                                            <time datetime="{{ item.date_posted }}">{{ item.date_posted }}</time>
-                                        </div>
-                                    </div>
-                                    <footer class="card-footer">
-                                        <p class="card-footer-item">
-                                            <span class="title is-3">{{ item.price }}</span>
-                                        </p>
-                                        {% if user.is_authenticated and item.user != user %}
-                                        <a href="{% url 'initiate_trade' item.id %}" class="button is-primary">Cambiar</a>
+{% load static %}  <!-- Asegúrate de cargar la etiqueta static al comienzo de tu archivo HTML -->
+
+<div class="content-wrapper">
+    <section class="hero custom-green-background is-medium">
+        <div class="hero-body">
+            <div class="container">
+                <h1 class="title">Items</h1>
+                <div class="columns is-multiline">
+                    {% for item in page_obj %}
+                        <div class="column is-one-quarter">
+                            <div class="card">
+                                <div class="card-image">
+                                    <figure class="image is-4by3">
+                                        {% if item.image %}
+                                            <img src="{{ item.image.url }}" alt="{{ item.title }}">
+                                        {% else %}
+                                            <!-- Imagen por defecto utilizando la etiqueta static -->
+                                            <img src="{% static 'images/perrito.jpg' %}" alt="Imagen por defecto">
                                         {% endif %}
-                                    </footer>
+                                    </figure>
                                 </div>
-                            </div>
-                        {% empty %}
-                            <p>No hay items disponibles.</p>
-                        {% endfor %}
-                    </div>
-                        <nav class="pagination" role="navigation" aria-label="pagination">
-                            {% if page_obj.has_previous %}
-                                <a href="?page={{ page_obj.previous_page_number }}" class="pagination-previous">Anterior</a>
-                            {% endif %}
-                            {% if page_obj.has_next %}
-                                <a href="?page={{ page_obj.next_page_number }}" class="pagination-next">Siguiente</a>
-                            {% endif %}
-                            <ul class="pagination-list">
-                                {% for num in page_obj.paginator.page_range %}
-                                    {% if page_obj.number == num %}
-                                        <li><a class="pagination-link is-current">{{ num }}</a></li>
-                                    {% else %}
-                                        <li><a href="?page={{ num }}" class="pagination-link">{{ num }}</a></li>
+                                <div class="card-content">
+                                    <div class="media">
+                                        <div class="media-content">
+                                            <p class="title is-4">{{ item.title }}</p>
+                                            <p class="subtitle is-6">{{ item.user.username }}</p>
+                                            <p class="subtitle is-6">{{ item.location }}</p>
+                                        </div>
+                                    </div>
+
+                                    <div class="content">
+                                        {{ item.description|truncatewords:30 }}
+                                        <br>
+                                        <time datetime="{{ item.date_posted }}">{{ item.date_posted }}</time>
+                                    </div>
+                                </div>
+                                <footer class="card-footer">
+                                    <p class="card-footer-item">
+                                        <span class="title is-3">{{ item.price }}</span>
+                                    </p>
+                                    {% if user.is_authenticated and item.user != user %}
+                                        <a href="{% url 'initiate_trade' item.id %}" class="button is-primary">Cambiar</a>
                                     {% endif %}
-                                {% endfor %}
-                            </ul>
-                        </nav>
+                                </footer>
+                            </div>
+                        </div>
+                    {% empty %}
+                        <p>No hay items disponibles.</p>
+                    {% endfor %}
                 </div>
+                <nav class="pagination" role="navigation" aria-label="pagination">
+                    {% if page_obj.has_previous %}
+                        <a href="?page={{ page_obj.previous_page_number }}" class="pagination-previous">Anterior</a>
+                    {% endif %}
+                    {% if page_obj.has_next %}
+                        <a href="?page={{ page_obj.next_page_number }}" class="pagination-next">Siguiente</a>
+                    {% endif %}
+                    <ul class="pagination-list">
+                        {% for num in page_obj.paginator.page_range %}
+                            {% if page_obj.number == num %}
+                                <li><a class="pagination-link is-current">{{ num }}</a></li>
+                            {% else %}
+                                <li><a href="?page={{ num }}" class="pagination-link">{{ num }}</a></li>
+                            {% endif %}
+                        {% endfor %}
+                    </ul>
+                </nav>
             </div>
-        </section>
-    </div>
-    
+        </div>
+    </section>
+</div>
+
+
+
+
     <footer class="footer">
         <p>© Truequeapp - All Rights Reserved</p>
         <div class="footer-links">

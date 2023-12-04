@@ -97,34 +97,34 @@
                         <h1 class="title has-text-centered">Subir Producto</h1>
                         <form method="post" enctype="multipart/form-data" class="box">
                             {% csrf_token %}
+                            <!-- Renderiza todos los campos excepto 'image' -->
                             {% for field in form %}
-                                <div class="field">
-                                    <label class="label" for="id_{{ field.name }}">{{ field.label }}</label>
-                                    <div class="control">
-                                        {% if field.name == 'active' %}
-                                            <!-- Renderiza el campo 'active' como un toggle switch -->
-                                            <label class="switch">
-                                                <input type="checkbox" id="id_{{ field.name }}" name="{{ field.name }}" {% if field.value %} checked {% endif %}>
-                                                <span class="slider round"></span>
-                                            </label>
-                                        {% elif field.name == 'description' %}
-                                            <!-- Campo de descripción -->
-                                            <textarea class="textarea" id="id_{{ field.name }}" name="{{ field.name }}" rows="4"></textarea>
-                                        {% else %}
-                                            <!-- Otros campos -->
-                                            <input class="{{ field.field.widget.input_type }}" id="id_{{ field.name }}" name="{{ field.name }}" class="input">
-                                        {% endif %}
+                                {% if field.name != 'image' %}
+                                    <div class="field">
+                                        <label class="label" for="id_{{ field.name }}">{{ field.label }}</label>
+                                        <div class="control">
+                                            {{ field }}
+                                        </div>
+                                        {% for error in field.errors %}
+                                            <p class="help is-danger">{{ error }}</p>
+                                        {% endfor %}
                                     </div>
-                                    {% for error in field.errors %}
-                                        <p class="help is-danger">{{ error }}</p>
-                                    {% endfor %}
-                                </div>
+                                {% endif %}
                             {% endfor %}
+                            
+                            <!-- Ahora renderiza el campo 'image' manualmente -->
                             <div class="field">
+                                <label class="label" for="id_image">Imagen</label>
                                 <div class="control">
+                                    {{ form.image }}
+                                </div>
+                                {% if form.image.errors %}
+                                    <p class="help is-danger">{{ form.image.errors }}</p>
+                                {% endif %}
+                            </div>
+                            <div class="control">
                                     <button type="submit" class="button is-link is-fullwidth">Subir</button>
                                 </div>
-                            </div>
                         </form>
                     </div>
                 </div>
@@ -177,3 +177,56 @@
     </script>
 </body>
 </html>
+
+
+
+
+
+
+
+
+
+
+{% comment %} 
+<form method="post" enctype="multipart/form-data" class="box">
+    {% csrf_token %}
+    {% for field in form %}
+        <div class="field">
+            <label class="label" for="id_{{ field.name }}">{{ field.label }}</label>
+            <div class="control">
+                {% if field.name == 'active' %}
+                    <!-- Renderiza el campo 'active' como un toggle switch -->
+                    <label class="switch">
+                        <input type="checkbox" id="id_{{ field.name }}" name="{{ field.name }}" {% if field.value %} checked {% endif %}>
+                        <span class="slider round"></span>
+                    </label>
+                {% elif field.name == 'description' %}
+                    <!-- Campo de descripción -->
+                    <textarea class="textarea" id="id_{{ field.name }}" name="{{ field.name }}" rows="4"></textarea>
+                {% else %}
+                    <!-- Otros campos -->
+                    <input class="{{ field.field.widget.input_type }}" id="id_{{ field.name }}" name="{{ field.name }}" class="input">
+                {% endif %}
+            </div>
+            {% for error in field.errors %}
+                <p class="help is-danger">{{ error }}</p>
+            {% endfor %}
+        </div>
+    {% endfor %}
+        
+    <div class="field">
+        <label class="label" for="id_image">Imagen</label>
+        <div class="control">
+            <input type="file" id="id_image" name="image" accept="image/*" class="input">
+        </div>
+        {% if form.image.errors %}
+            <p class="help is-danger">{{ form.image.errors.as_text }}</p>
+        {% endif %}
+    </div>
+
+
+        <div class="control">
+            <button type="submit" class="button is-link is-fullwidth">Subir</button>
+        </div>
+    </div>
+</form> {% endcomment %}

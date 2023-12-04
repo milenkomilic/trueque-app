@@ -19,9 +19,10 @@ class TradeForm(forms.ModelForm):
         fields = ['responder_item']
 
 class ItemForm(forms.ModelForm):
+    image = forms.ImageField(required=True, error_messages={'required': 'Este campo es requerido'})
     class Meta:
         model = Item
-        fields = ['title', 'description', 'location', 'price', 'tags', 'active']
+        fields = ['title', 'description', 'location', 'price', 'tags', 'active', 'image']
         widgets = {
             'description': forms.Textarea(attrs={'rows': 4}),
             'tags': forms.TextInput(attrs={'placeholder': 'Ingrese las etiquetas separadas por comas'}),
