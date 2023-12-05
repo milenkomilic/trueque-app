@@ -74,13 +74,21 @@ WSGI_APPLICATION = 'truequeapp.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': BASE_DIR / 'db.sqlite3',
+#     }
+# }
+
+
 DATABASES = {
     'default': {
         'ENGINE': 'mssql',
         'NAME': 'django_sqlserver',
         'USER': 'sa',
         'PASSWORD': '123456',
-        'HOST': 'DESKTOP-49Q1PT9\SQLEXPRESS',
+        'HOST': r'DESKTOP-49Q1PT9\SQLEXPRESS',
         'PORT': '',
 
         'OPTIONS': {
@@ -135,3 +143,11 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_USE_TLS = True  
+EMAIL_HOST = 'smtp.office365.com'
+EMAIL_PORT = 587
+EMAIL_HOST_USER = 'milmilicm@outlook.com'  
+EMAIL_HOST_PASSWORD = 'kenko3142244'  
+DEFAULT_FROM_EMAIL = 'milmilicm@outlook.com'

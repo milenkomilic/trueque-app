@@ -24,6 +24,7 @@ class CustomUser(AbstractBaseUser):
     is_super_user = models.BooleanField(default=False)
     date_of_birth = models.DateField(null=True, blank=True)
     email = models.EmailField(max_length=255, unique=True)
+    is_active = models.BooleanField(default=False)
     objects = CustomUserManager()
 
     USERNAME_FIELD = 'username'

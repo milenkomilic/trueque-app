@@ -24,7 +24,7 @@ from django.conf.urls.static import static
 urlpatterns = [
     path('trueque/', include("trueque_web_service.urls")),
     path('logout/', auth_views.LogoutView.as_view(next_page='index'), name='logout'),
-    path('admin/', admin.site.urls)
+    path('admin/', admin.site.urls),
 ]
 
 if settings.DEBUG:
