@@ -3,6 +3,11 @@ from django.contrib.auth.forms import UserCreationForm
 from .models import CustomUser
 from .models import Item, Trade
 
+class PasswordResetForm(forms.Form):
+    email = forms.EmailField()
+
+class SetPasswordForm(forms.Form):
+    new_password = forms.CharField(widget=forms.PasswordInput())
 
 class CustomUserEditForm(forms.ModelForm):
     date_of_birth = forms.DateField(

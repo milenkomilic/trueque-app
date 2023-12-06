@@ -1,19 +1,18 @@
 from django.contrib.auth.forms import AuthenticationForm
-from django.http import JsonResponse
-from django.contrib.auth import login, authenticate, get_user_model
+from django.contrib.auth import login, get_user_model
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect, get_object_or_404
 from django.utils import timezone
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from .models import Item, Trade
-from .forms import CustomUserCreationForm, ItemForm
+from .forms import CustomUserCreationForm, ItemForm, PasswordResetForm, SetPasswordForm
 from .forms import CustomUserEditForm
-from django.db.models import Q, F, Max, OuterRef, Subquery
+from django.db.models import Q
 from django.contrib import messages
 from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse, HttpResponse
 from django.views.decorators.http import require_http_methods
-
+from django.contrib.auth.tokens import default_token_generator
 from django.contrib.sites.shortcuts import get_current_site  
 from django.utils.encoding import force_bytes, force_str  
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode  
@@ -21,6 +20,76 @@ from django.template.loader import render_to_string
 from .token import account_activation_token  
 from django.contrib.auth.models import User
 from django.core.mail import EmailMessage  
+
+User = get_user_model()
+
+def password_reset_view(request):
+    if request.method == 'POST':
+        form = PasswordResetForm(request.POST)
+        if form.is_valid():
+            email = form.cleaned_data['email']
+            try:
+                user = User.objects.get(email=email)
+            except User.DoesNotExist:
+                return HttpResponse('Usuario con este email no existe')
+            else:
+                token = default_token_generator.make_token(user)
+                uid = urlsafe_base64_encode(force_bytes(user.pk))
+                reset_link = request.build_absolute_uri(f'/trueque/reset/{uid}/{token}/')
+                mail_subject = 'Password reset request' 
+                message = render_to_string('accounts/password_reset_email.html', {
+                    'user': user,
+                    'reset_link': reset_link,
+                })
+                to_email = form.cleaned_data.get('email')  
+                email = EmailMessage(  
+                        mail_subject, message, to=[to_email]  
+                )  
+                email.send()  
+    else:
+        form = PasswordResetForm()
+    return render(request, 'accounts/password_reset.html', {'form': form})
+
+def activate_pwd(request, uidb64, token):
+    try:
+        uid = force_str(urlsafe_base64_decode(uidb64))
+        user = User.objects.get(pk=uid)
+    except (TypeError, ValueError, OverflowError, User.DoesNotExist):
+        user = None
+
+    if user is not None and default_token_generator.check_token(user, token):
+        if request.method == 'POST':
+            form = SetPasswordForm(request.POST)
+            if form.is_valid():
+                new_password = form.cleaned_data['new_password']
+                user.set_password(new_password)
+                user.save()
+                # Redirect to the login page after successful password reset
+                return redirect('login')
+        else:
+            form = SetPasswordForm()
+        # Render the form for GET requests and invalid POST requests
+        return render(request, 'accounts/password_reset_confirm.html', {'form': form})
+    else:
+        return HttpResponse('Reset link is invalid or has expired')
+
+def password_reset_done(request):
+    return HttpResponse('Your password has changed!')
+
+def activate(request, uidb64, token):
+    User = get_user_model()
+    try:
+        uid = force_str(urlsafe_base64_decode(uidb64))
+        user = User.objects.get(pk=uid)
+    except (TypeError, ValueError, OverflowError, User.DoesNotExist):
+        user = None
+
+    if user is not None and account_activation_token.check_token(user, token):
+        user.is_active = True
+        user.save()
+        return HttpResponse('Thank you for your email confirmation. Now you can log in to your account.')
+    else:
+        return HttpResponse('Activation link is invalid!')
 
 def signup_view(request):  
     if request.method == 'POST':  
@@ -49,21 +118,6 @@ def signup_view(request):
         form = CustomUserCreationForm()  
     return render(request, 'accounts/signup.html', {'form': form}) 
 
-def activate(request, uidb64, token):
-    User = get_user_model()
-    try:
-        uid = force_str(urlsafe_base64_decode(uidb64))
-        user = User.objects.get(pk=uid)
-    except (TypeError, ValueError, OverflowError, User.DoesNotExist):
-        user = None
-
-    if user is not None and account_activation_token.check_token(user, token):
-        user.is_active = True
-        user.save()
-        return HttpResponse('Thank you for your email confirmation. Now you can log in to your account.')
-    else:
-        return HttpResponse('Activation link is invalid!')
-
 def index(request):
     return render(request, 'accounts/index.html')
 
@@ -77,9 +131,6 @@ def login_view(request):
     else:
         form = AuthenticationForm()
     return render(request, 'accounts/login.html', {'form': form})
-
-def password_reset_view(request):
-    return render(request, 'accounts/password_reset.html')
 
 @login_required
 def user_profile_view(request):
