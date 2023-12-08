@@ -5,51 +5,106 @@
     <title>Welcome to Truequeapp</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.9.3/css/bulma.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
+    
     <style>
+        html, body {
+            height: 100%;
+            margin: 0;
+        }
         body {
             display: flex;
             flex-direction: column;
             min-height: 100vh;
-            background-color: #167341; /* Color de fondo verde */
-            margin: 0;
+            background-color: #167341; /* Este es el color de fondo de todo el cuerpo */
         }
-        
         .content {
-            flex: 1;
-            /* Añade otros estilos para el contenido aquí si es necesario */
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
         }
-        
+        .select-trade-container {
+            background-color: #f9f9f9;
+            border-radius: 5px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            padding: 20px;
+            width: 100%;
+            max-width: 600px;
+            margin: 30px auto; /* Centrado y con margen superior e inferior */
+        }
+        .select-trade-title {
+            background-color: #fff; /* Color blanco para mantener consistencia con el chat */
+            color: #333;
+            padding: 10px;
+            margin: -20px -20px 20px -20px;
+            text-align: center;
+        }
+        form {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px; /* Espacio entre elementos del formulario */
+        }
+        select {
+            width: 100%;
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+            margin-bottom: 10px; /* Espacio debajo del select */
+        }
+        button {
+            background-color: #167341;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 20px;
+            cursor: pointer;
+            width: auto; /* Se ajusta al contenido */
+            margin: 0; /* Elimina márgenes predeterminados */
+        }
+        button:hover {
+            background-color: #145a32;
+        }
         .footer {
             background-color: #333333;
+            padding: 2rem 1rem;
             color: white;
             text-align: center;
-            padding: 20px 0;
-            margin-top: auto; /* Esto empujará el footer hacia abajo */
+            position: relative; /* Se coloca en relación con su contenedor normal */
+            bottom: 0;
+            width: 100%;
         }
-        
-        /* Estilos para íconos y enlaces del footer, si es necesario */
         .footer a {
             color: white;
             margin: 0 10px;
             text-decoration: none;
         }
-        
         .footer a:hover {
             text-decoration: underline;
         }
-        
         .footer-icons {
             margin-top: 1rem;
         }
-        
         .icon {
             display: inline-block;
             margin: 0 5px;
             color: white;
             font-size: 1.5rem;
         }
-        
+        /* Si es necesario, ajusta los estilos de .navbar para que coincida con el estilo del chat */
+        .navbar {
+            /* Tus estilos para la barra de navegación */
+        }
+        /* Ajustes para el responsive design si es necesario */
+        @media (max-width: 768px) {
+            .select-trade-container {
+                padding: 10px;
+                margin: 10px;
+            }
+        }
     </style>
+    
+
 </head>
 <body>
     <nav class="navbar is-dark" role="navigation" aria-label="main navigation">
@@ -72,11 +127,10 @@
                     <a class="navbar-item" href="{% url 'view_items' %}">Market</a>
                     <a class="navbar-item" href="{% url 'respond_to_trade' %}">Trades</a>
                     <a class="navbar-item" href="{% url 'list_trades_for_chat' %}">Trade Chat</a>
-
-
+                    
                 {% endif %}
                 <!-- Links comunes a todos los usuarios -->
-                <a class="navbar-item" href="{% url 'contacto' %}">Contact</a>
+                <a class="navbar-item">Contact</a>
                 {% if user.is_authenticated %}
                 <a class="navbar-item" href="{% url 'logout' %}">Logout</a>
                 {% endif %}
@@ -88,21 +142,18 @@
         <section class="hero custom-green-background is-medium">
             <div class="hero-body">
                 <div class="container has-text-centered">
-                    <p class="title has-text-white">
-                        Welcome to Truequeapp!
-                    </p>
-                    <p class="subtitle has-text-white">
-                        Your one-stop hub for all your needs.
-                    </p>
-                        {% if user.is_authenticated %}
-                            <p>El usuario está autenticado</p>
-                        {% else %}
-                            <div class="buttons is-centered">
-                                <a href="{% url 'login' %}" class="button is-light">Login</a>
-                                <a href="{% url 'signup' %}" class="button is-dark">Sign Up</a>
-                            </div>
-                            <p>El usuario no está autenticado</p>
-                        {% endif %}
+                    <div class="select-trade-container">
+                        <h1 class="select-trade-title">Selecciona un Trueque para el Chat</h1>
+                        <form action="{% url 'trade_chat_redirect' %}" method="get">
+                            <label for="trade_id">Trueque:</label>
+                            <select name="trade_id" id="trade_id">
+                            {% for trade in trades %}
+                                <option value="{{ trade.id }}">Trueque {{ trade.id }} - {{ trade.status }}</option>
+                            {% endfor %}
+                            </select>
+                            <button type="submit">Ir al Chat</button>
+                        </form>
+                    </div>
                 </div>
             </div>
         </section>

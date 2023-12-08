@@ -4,7 +4,7 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect, get_object_or_404
 from django.utils import timezone
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
-from .models import Item, Trade
+from .models import Item, Trade, ChatMessage
 from .forms import CustomUserCreationForm, ItemForm, PasswordResetForm, SetPasswordForm
 from .forms import CustomUserEditForm
 from django.db.models import Q
@@ -19,9 +19,74 @@ from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.template.loader import render_to_string  
 from .token import account_activation_token  
 from django.contrib.auth.models import User
-from django.core.mail import EmailMessage  
+from django.core.mail import EmailMessage
 
 User = get_user_model()
+
+
+@login_required
+def get_new_messages(request, trade_id):
+    last_message_id = request.GET.get('last_message_id')
+    new_messages = ChatMessage.objects.filter(
+        trade_id=trade_id, 
+        id__gt=last_message_id
+    ).order_by('timestamp')
+
+    # Serializa los mensajes para JSON
+    messages_data = [
+        {
+            'id': message.id,
+            'sender': message.sender.username,
+            'message': message.message,
+            'timestamp': message.timestamp.strftime('%b %d, %Y, %I:%M %p')
+        } for message in new_messages
+    ]
+
+    return JsonResponse(messages_data, safe=False)  # `safe=False` es necesario para serializar una lista
+
+@login_required
+def trade_chat_redirect(request):
+    trade_id = request.GET.get('trade_id')
+    return redirect('trade_chat', trade_id=trade_id)
+
+def list_trades_for_chat(request):
+    # Filtra los trueques relevantes para el usuario actual y que no estén completados o cancelados.
+    trades = Trade.objects.filter(
+        Q(initiator=request.user) | Q(receiver=request.user),
+        status__in=['initiated', 'accepted']
+    )
+    return render(request, 'accounts/list_trades_for_chat.html', {'trades': trades})
+
+@login_required
+def trade_chat(request, trade_id):
+    trade = get_object_or_404(Trade, id=trade_id)
+    if request.user not in [trade.initiator, trade.receiver]:
+        return redirect('index')
+    
+    messages = ChatMessage.objects.filter(trade=trade).order_by('timestamp')
+    
+    last_message_id = messages.last().id if messages.exists() else None
+    
+    return render(request, 'accounts/trade_chat.html', {
+        'trade': trade, 
+        'messages': messages, 
+        'last_message_id': last_message_id
+    })
+
+
+@login_required
+def send_chat_message(request, trade_id):
+    trade = get_object_or_404(Trade, id=trade_id)
+    if request.user not in [trade.initiator, trade.receiver]:
+        # Redirigir si el usuario no está involucrado en el trueque
+        return redirect('index')
+
+    if request.method == 'POST':
+        message = request.POST.get('message', '').strip()
+        if message:
+            ChatMessage.objects.create(trade=trade, sender=request.user, message=message)
+        return redirect('trade_chat', trade_id=trade_id)
+
 
 def password_reset_view(request):
     if request.method == 'POST':
@@ -50,6 +115,7 @@ def password_reset_view(request):
         form = PasswordResetForm()
     return render(request, 'accounts/password_reset.html', {'form': form})
 
+
 def activate_pwd(request, uidb64, token):
     try:
         uid = force_str(urlsafe_base64_decode(uidb64))
@@ -73,8 +139,10 @@ def activate_pwd(request, uidb64, token):
     else:
         return HttpResponse('Reset link is invalid or has expired')
 
+
 def password_reset_done(request):
     return HttpResponse('Your password has changed!')
+
 
 def activate(request, uidb64, token):
     User = get_user_model()
@@ -90,6 +158,7 @@ def activate(request, uidb64, token):
         return HttpResponse('Thank you for your email confirmation. Now you can log in to your account.')
     else:
         return HttpResponse('Activation link is invalid!')
+
 
 def signup_view(request):  
     if request.method == 'POST':  
@@ -118,8 +187,12 @@ def signup_view(request):
         form = CustomUserCreationForm()  
     return render(request, 'accounts/signup.html', {'form': form}) 
 
+
 def index(request):
     return render(request, 'accounts/index.html')
+
+def contacto_view(request):
+    return render(request, 'accounts/contacto.html')
 
 def login_view(request):
     if request.method == 'POST':
@@ -132,9 +205,11 @@ def login_view(request):
         form = AuthenticationForm()
     return render(request, 'accounts/login.html', {'form': form})
 
+
 @login_required
 def user_profile_view(request):
     return render(request, 'accounts/user_profile.html')
+
 
 @login_required
 def upload_item_view(request):
@@ -177,7 +252,7 @@ def view_items(request):
 
     return render(request, 'items/view_items.html', {'page_obj': items})
 
-
+@login_required
 def my_items(request):
     items = Item.objects.filter(user=request.user)
     paginator = Paginator(items, 4)

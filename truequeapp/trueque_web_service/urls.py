@@ -19,4 +19,10 @@ urlpatterns = [
     path('password_reset/', views.password_reset_view, name='password_reset'),
     path('reset/<uidb64>/<token>/', views.activate_pwd, name='activate_pwd'),
     path('password_reset_done/', views.password_reset_done, name='password_reset_done'),
+    path('trade/<int:trade_id>/chat/', views.trade_chat, name='trade_chat'),
+    path('trade/<int:trade_id>/send_message/', views.send_chat_message, name='send_chat_message'),
+    path('list_trades_for_chat/', views.list_trades_for_chat, name='list_trades_for_chat'),
+    path('trade_chat_redirect/', views.trade_chat_redirect, name='trade_chat_redirect'),
+    path('trade/<int:trade_id>/get_new_messages/', views.get_new_messages, name='get_new_messages'),
+    path('contacto/', views.contacto_view, name='contacto'),
 ]

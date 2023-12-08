@@ -76,3 +76,12 @@ class Item(models.Model):
     date_posted = models.DateTimeField(auto_now_add=True)
     active = models.BooleanField(default=True)
     image = models.ImageField(upload_to='item_images/')
+
+class ChatMessage(models.Model):
+    trade = models.ForeignKey(Trade, on_delete=models.CASCADE, related_name='messages')
+    sender = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    message = models.TextField()
+    timestamp = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Mensaje de {self.sender.username} para el trueque {self.trade.id}"

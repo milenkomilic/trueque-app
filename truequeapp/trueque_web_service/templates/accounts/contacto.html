@@ -7,27 +7,81 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
     <style>
         body {
+            font-family: 'Arial', sans-serif;
+            background: #167341; /* Color de fondo verde */
+            margin: 0;
+            padding: 0;
             display: flex;
             flex-direction: column;
-            min-height: 100vh;
-            background-color: #167341; /* Color de fondo verde */
-            margin: 0;
+            min-height: 100vh; /* Altura mínima del viewport */
         }
         
-        .content {
-            flex: 1;
-            /* Añade otros estilos para el contenido aquí si es necesario */
+        .contact-container {
+            width: 100%;
+            max-width: 800px;
+            margin: auto;
+            padding: 20px;
+            background: white;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .contact-container h2 {
+            text-align: center; /* Centra el título */
+            font-weight: bold; /* Hace el texto en negritas */
+            color: #333; /* Color oscuro para el texto */
+            padding: 1rem 0; /* Espacio superior e inferior */
+            background-color: #fff; /* Fondo blanco para destacar el título */
+            margin: -20px -20px 20px -20px; /* Negativo margen para sobreponerse al padding del contenedor */
+            border-radius: 4px 4px 0 0; /* Redondea las esquinas superiores */
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Sutil sombra para dar profundidad */
+            font-size: 1.75rem; /* Tamaño más grande para el título */
+        }
+        
+        .contact-form {
+            display: grid;
+            grid-template-columns: 1fr; /* Una sola columna para todos los tamaños de pantalla */
+            grid-gap: 20px;
+            padding: 20px;
+        }
+        
+        .contact-form label {
+            display: block;
+            margin-bottom: 5px; /* Espacio entre la etiqueta y el campo de entrada */
+            font-weight: bold;
+        }
+        
+        .contact-form input[type="text"],
+        .contact-form input[type="email"],
+        .contact-form textarea {
+            width: calc(100% - 22px); /* 100% width - padding + border */
+            padding: 10px;
+            margin-bottom: 20px; /* Espacio después de cada campo de entrada */
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        
+        .contact-form button {
+            padding: 10px 0; /* Aumentar el padding vertical para un botón más alto */
+            background-color: #167341; /* Color verde */
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-top: 10px; /* Espacio entre el último campo de entrada y el botón */
+        }
+        
+        .contact-form button:hover {
+            background-color: #145a32; /* Un verde más oscuro para el efecto hover */
         }
         
         .footer {
-            background-color: #333333;
+            background-color: #333333; /* Color de fondo */
             color: white;
             text-align: center;
             padding: 20px 0;
             margin-top: auto; /* Esto empujará el footer hacia abajo */
         }
         
-        /* Estilos para íconos y enlaces del footer, si es necesario */
         .footer a {
             color: white;
             margin: 0 10px;
@@ -49,7 +103,14 @@
             font-size: 1.5rem;
         }
         
+        @media (max-width: 768px) {
+            .contact-form {
+                grid-template-columns: 1fr; /* Una sola columna para pantallas pequeñas */
+            }
+        }        
+    
     </style>
+    
 </head>
 <body>
     <nav class="navbar is-dark" role="navigation" aria-label="main navigation">
@@ -76,7 +137,7 @@
 
                 {% endif %}
                 <!-- Links comunes a todos los usuarios -->
-                <a class="navbar-item" href="{% url 'contacto' %}">Contact</a>
+                <a class="navbar-item" href="{% url 'logout' %}">Contact</a>
                 {% if user.is_authenticated %}
                 <a class="navbar-item" href="{% url 'logout' %}">Logout</a>
                 {% endif %}
@@ -84,28 +145,22 @@
         </div>
     </nav>
 
-    <div class="content">
-        <section class="hero custom-green-background is-medium">
-            <div class="hero-body">
-                <div class="container has-text-centered">
-                    <p class="title has-text-white">
-                        Welcome to Truequeapp!
-                    </p>
-                    <p class="subtitle has-text-white">
-                        Your one-stop hub for all your needs.
-                    </p>
-                        {% if user.is_authenticated %}
-                            <p>El usuario está autenticado</p>
-                        {% else %}
-                            <div class="buttons is-centered">
-                                <a href="{% url 'login' %}" class="button is-light">Login</a>
-                                <a href="{% url 'signup' %}" class="button is-dark">Sign Up</a>
-                            </div>
-                            <p>El usuario no está autenticado</p>
-                        {% endif %}
-                </div>
-            </div>
-        </section>
+    <div class="contact-container">
+        <h2>Contacto Casa Central Truequeapp</h2>
+        <form class="contact-form" action="tu_endpoint_de_procesamiento" method="post">
+            <label for="name">Nombre</label>
+            <input type="text" id="name" name="name" required>
+
+            <label for="email">Email</label>
+            <input type="email" id="email" name="email" required>
+
+            <label for="message">Mensaje</label>
+            <textarea id="message" name="message" required></textarea>
+
+            <!-- Aquí deberías agregar tu integración con reCAPTCHA -->
+
+            <button type="submit">Enviar</button>
+        </form>
     </div>
 
     <footer class="footer">
