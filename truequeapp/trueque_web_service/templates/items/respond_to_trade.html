@@ -21,6 +21,12 @@
             display: flex;
             flex-direction: column;
         }
+        .container {
+            width: 33%;
+            max-width: 800px; /* Maximum width for the container */
+            padding: 20px;
+            box-sizing: border-box;
+        }
         .content-wrapper {
             flex: 1;
         }
@@ -75,19 +81,21 @@
             </a>
         </div>
         <div id="navbarBasicExample" class="navbar-menu">
-            <div class="navbar-start">
+            <div class="navbar-start"> 
                 {% if user.is_authenticated %}
                     <!-- Links para usuarios autenticados -->
-                    <a class="navbar-item" href="{% url 'user_profile' %}">Profile</a>
-                    <a class="navbar-item" href="{% url 'upload_item' %}">Upload</a>
-                    <a class="navbar-item" href="{% url 'view_items' %}">Market</a>
-                    <a class="navbar-item" href="{% url 'respond_to_trade' %}">Trades</a>
-                    <a class="navbar-item" href="{% url 'list_trades_for_chat' %}">Trade Chat</a>
+                    <a class="navbar-item" href="{% url 'user_profile' %}">Perfil</a>
+                    <a class="navbar-item" href="{% url 'upload_item' %}">Subir</a>
+                    <a class="navbar-item" href="{% url 'view_items' %}">Mercado</a>
+                    <a class="navbar-item" href="{% url 'respond_to_trade' %}">Notificaciones</a>
+                    <a class="navbar-item" href="{% url 'list_trades_for_chat' %}">Chat</a>
+
+
                 {% endif %}
                 <!-- Links comunes a todos los usuarios -->
-                <a class="navbar-item">Contact</a>
+                <a class="navbar-item" href="{% url 'contacto' %}">Contacto</a>
                 {% if user.is_authenticated %}
-                <a class="navbar-item" href="{% url 'logout' %}">Logout</a>
+                <a class="navbar-item" href="{% url 'logout' %}">Cerrar Sesion</a>
                 {% endif %}
             </div>
         </div>
@@ -95,9 +103,8 @@
 
     {% block content %}
         <div class="container">
-            <h1 class="title">Trade Offers</h1>
+            <h1 class="title has-text-centered" style="color: white;">Notificaciones de trueque</h1>
             {% for trade in trade_offers %}
-
                 {% if messages %}
                     {% for message in messages %}
                         <div class="notification {% if message.tags %}is-{{ message.tags }}{% endif %}">
@@ -105,41 +112,48 @@
                         </div>
                     {% endfor %}
                 {% endif %}
+                <div class="box">
+                    <article class="media">
+                        <div class="media-left">
+                            <!-- Image of the item being offered -->
+                            <figure class="image is-128x128">
+                                {% if trade.initiator_item.image %}
+                                    <img src="{{ trade.initiator_item.image.url }}" alt="Image of {{ trade.initiator_item.title }}">
+                                {% endif %}
+                            </figure>
 
+                        </div>
+                        <div class="media-content">
+                            <div class="content">
+                                <p>
+                                    <strong>Nombre: </strong> {{ trade.initiator_item.title }} <br>
+                                    <strong>Emisor: </strong> {{ trade.initiator.username }} <br>
+                                    <strong>Descripción: </strong> {{ trade.initiator_item.description }} <br>
+                                    <strong>Estado: </strong> {{ trade.status }}
+                                </p>
+                            </div>
+                        </div>
+                        <div class="media-right">
+                            <form method="post">
+                                {% csrf_token %}
+                                <input type="hidden" name="trade_id" value="{{ trade.id }}">
+                                <button class="button is-success" type="submit" name="accept">Acceptar</button>
+                                <button class="button is-danger" type="submit" name="decline">Declinar</button>
+                            </form>
+                        </div>
+                    </article>
+                </div>
+            {% empty %}
             <div class="box">
                 <article class="media">
-                    <div class="media-left">
-                        <!-- Image of the item being offered -->
-                        <figure class="image is-64x64">
-                            <img src="{{ trade.initiator_item.image_url }}" alt="Image of {{ trade.initiator_item.title }}">
-                        </figure>
-                    </div>
-                    <div class="media-content">
-                        <div class="content">
-                            <p>
-                                <strong>{{ trade.initiator_item.title }}</strong> <br>
-                                Offered by: {{ trade.initiator.username }} <br>
-                                Description: {{ trade.initiator_item.description }} <br>
-                                Status: {{ trade.status }}
-                            </p>
-                        </div>
-                    </div>
-                    <div class="media-right">
-                        <form method="post">
-                            {% csrf_token %}
-                            <input type="hidden" name="trade_id" value="{{ trade.id }}">
-                            <button class="button is-success" type="submit" name="accept">Accept</button>
-                            <button class="button is-danger" type="submit" name="decline">Decline</button>
-                        </form>
-                    </div>
+                    <p>No has recibido ofertas en estos momentos.</p>
                 </article>
             </div>
-            {% empty %}
-            <p>No trade offers at this moment.</p>
             {% endfor %}
         </div>
     {% endblock %}
 
+    
     <footer class="footer">
         <p>© Truequeapp - All Rights Reserved</p>
         <div class="footer-links">

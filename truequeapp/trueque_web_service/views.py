@@ -47,7 +47,12 @@ def get_new_messages(request, trade_id):
 @login_required
 def trade_chat_redirect(request):
     trade_id = request.GET.get('trade_id')
-    return redirect('trade_chat', trade_id=trade_id)
+    if trade_id:
+        return redirect('trade_chat', trade_id=trade_id)
+    else:
+        messages.error(request, 'Debes subir items para poder acceder al chat de trueques!')
+        return redirect('list_trades_for_chat')
+
 
 def list_trades_for_chat(request):
     # Filtra los trueques relevantes para el usuario actual y que no estén completados o cancelados.
@@ -273,25 +278,42 @@ def initiate_trade(request, item_id):
     item_to_trade = get_object_or_404(Item, id=item_id, active=True)
     user_items = Item.objects.filter(user=request.user, active=True)
 
+    if not user_items:
+        messages.error(request, 'Debes subir items para poder hacer trueques!')
+        return redirect('view_items')
+
     if request.method == 'POST':
         initiator_item = get_object_or_404(Item, id=request.POST.get('responder_item'), user=request.user, active=True)
         receiver = item_to_trade.user
 
-        trade = Trade(
-            initiator=request.user,
-            initiator_item=initiator_item,
-            receiver=receiver,
-            responder_item=item_to_trade
-        )
-        trade.save()
+        # Verifica si ya existe un trade entre ambos items
+        existing_trade = Trade.objects.filter(
+            Q(initiator=request.user, initiator_item=initiator_item, responder_item=item_to_trade) |
+            Q(receiver=request.user, responder_item=initiator_item, initiator_item=item_to_trade),
+            status='initiated'  # Asumiendo que hay un campo 'status' para marcar si el trade está activo
+        ).exists()
 
-        item_to_trade.trade = trade
-        initiator_item.trade = trade
-        item_to_trade.save()
-        initiator_item.save()
+        if existing_trade:
+            # Si ya existe un trade, no permitir crear otro y mostrar un mensaje
+            messages.error(request, 'Ya has enviado una oferta de trueque para este artículo.')
+            return redirect('initiate_trade', item_id=item_id)
+        else:
+            # No existe un trade, proceder con la creación
+            trade = Trade(
+                initiator=request.user,
+                initiator_item=initiator_item,
+                receiver=receiver,
+                responder_item=item_to_trade
+            )
+            trade.save()
 
-        messages.success(request, 'Trade offer has been sent.')
-        return redirect('initiate_trade', item_id=item_id)
+            item_to_trade.trade = trade
+            initiator_item.trade = trade
+            item_to_trade.save()
+            initiator_item.save()
+
+            messages.success(request, 'Trade offer has been sent.')
+            return redirect('initiate_trade', item_id=item_id)
     
     return render(request, 'items/initiate_trade.html', {'item_to_trade': item_to_trade, 'user_items': user_items})
 

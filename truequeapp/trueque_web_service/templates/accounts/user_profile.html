@@ -92,19 +92,21 @@
             </a>
         </div>
         <div id="navbarBasicExample" class="navbar-menu">
-            <div class="navbar-start">
+            <div class="navbar-start"> 
                 {% if user.is_authenticated %}
                     <!-- Links para usuarios autenticados -->
-                    <a class="navbar-item" href="{% url 'user_profile' %}">Profile</a>
-                    <a class="navbar-item" href="{% url 'upload_item' %}">Upload</a>
-                    <a class="navbar-item" href="{% url 'view_items' %}">Market</a>
-                    <a class="navbar-item" href="{% url 'respond_to_trade' %}">Trades</a>
-                    <a class="navbar-item" href="{% url 'list_trades_for_chat' %}">Trade Chat</a>
+                    <a class="navbar-item" href="{% url 'user_profile' %}">Perfil</a>
+                    <a class="navbar-item" href="{% url 'upload_item' %}">Subir</a>
+                    <a class="navbar-item" href="{% url 'view_items' %}">Mercado</a>
+                    <a class="navbar-item" href="{% url 'respond_to_trade' %}">Notificaciones</a>
+                    <a class="navbar-item" href="{% url 'list_trades_for_chat' %}">Chat</a>
+
+
                 {% endif %}
                 <!-- Links comunes a todos los usuarios -->
-                <a class="navbar-item">Contact</a>
+                <a class="navbar-item" href="{% url 'contacto' %}">Contacto</a>
                 {% if user.is_authenticated %}
-                <a class="navbar-item" href="{% url 'logout' %}">Logout</a>
+                <a class="navbar-item" href="{% url 'logout' %}">Cerrar Sesion</a>
                 {% endif %}
             </div>
         </div>
@@ -112,12 +114,12 @@
 
     <section class="section">
         <div class="container">
-            <h1 class="title has-text-centered" style="color: white;">Profile</h1>
             <div class="box">
+                <h1 class="title has-text-centered">Perfil</h1>
                 <article class="media">
                     <div class="media-content">
                         <div class="content">
-                            <p class="title is-4">Full Name</p>
+                            <p class="title is-4">Nombre</p>
                             <p class="subtitle is-6">{{ user.name }} {{ user.lastname }} {{ user.lastname_m }}</p>
                         </div>
                     </div>
@@ -135,7 +137,7 @@
                 <article class="media">
                     <div class="media-content">
                         <div class="content">
-                            <p class="title is-4">Date of Birth</p>
+                            <p class="title is-4">Fecha de nacimiento</p>
                             <p class="subtitle is-6">{{ user.date_of_birth|date:"Y-m-d" }}</p>
                         </div>
                     </div>
@@ -143,8 +145,8 @@
                 <article class="media">
                     <div class="media-content">
                         <div class="container center">
-                            <a href="{% url 'my_items' %}" class="button is-primary">View my items</a>
-                            <a href="{% url 'edit_profile' %}" class="button is-primary">Edit your profile</a>
+                            <a href="{% url 'my_items' %}" class="button is-primary">Ver mis items</a>
+                            <a href="{% url 'edit_profile' %}" class="button is-primary">Editar tu perfil</a>
                         </div>
                     </div>
                 </article>

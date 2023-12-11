@@ -122,41 +122,45 @@
             <div class="navbar-start"> 
                 {% if user.is_authenticated %}
                     <!-- Links para usuarios autenticados -->
-                    <a class="navbar-item" href="{% url 'user_profile' %}">Profile</a>
-                    <a class="navbar-item" href="{% url 'upload_item' %}">Upload</a>
-                    <a class="navbar-item" href="{% url 'view_items' %}">Market</a>
-                    <a class="navbar-item" href="{% url 'respond_to_trade' %}">Trades</a>
-                    <a class="navbar-item" href="{% url 'list_trades_for_chat' %}">Trade Chat</a>
-                    
+                    <a class="navbar-item" href="{% url 'user_profile' %}">Perfil</a>
+                    <a class="navbar-item" href="{% url 'upload_item' %}">Subir</a>
+                    <a class="navbar-item" href="{% url 'view_items' %}">Mercado</a>
+                    <a class="navbar-item" href="{% url 'respond_to_trade' %}">Notificaciones</a>
+                    <a class="navbar-item" href="{% url 'list_trades_for_chat' %}">Chat</a>
+
+
                 {% endif %}
                 <!-- Links comunes a todos los usuarios -->
-                <a class="navbar-item">Contact</a>
+                <a class="navbar-item" href="{% url 'contacto' %}">Contacto</a>
                 {% if user.is_authenticated %}
-                <a class="navbar-item" href="{% url 'logout' %}">Logout</a>
+                <a class="navbar-item" href="{% url 'logout' %}">Cerrar Sesion</a>
                 {% endif %}
             </div>
         </div>
     </nav>
 
     <div class="content">
-        <section class="hero custom-green-background is-medium">
-            <div class="hero-body">
-                <div class="container has-text-centered">
-                    <div class="select-trade-container">
-                        <h1 class="select-trade-title">Selecciona un Trueque para el Chat</h1>
-                        <form action="{% url 'trade_chat_redirect' %}" method="get">
-                            <label for="trade_id">Trueque:</label>
-                            <select name="trade_id" id="trade_id">
-                            {% for trade in trades %}
-                                <option value="{{ trade.id }}">Trueque {{ trade.id }} - {{ trade.status }}</option>
-                            {% endfor %}
-                            </select>
-                            <button type="submit">Ir al Chat</button>
-                        </form>
-                    </div>
+        <div class="container has-text-centered">
+            {% if messages %}
+                <div class="notification is-danger">
+                    {% for message in messages %}
+                        <p>{{ message }}</p>
+                    {% endfor %}
                 </div>
+            {% endif %}
+            <div class="select-trade-container">
+                <h1 class="select-trade-title">Selecciona un Trueque para el Chat</h1>
+                <form action="{% url 'trade_chat_redirect' %}" method="get">
+                    <label for="trade_id">Trueque:</label>
+                    <select name="trade_id" id="trade_id">
+                    {% for trade in trades %}
+                        <option value="{{ trade.id }}">Trueque {{ trade.id }} - {{ trade.status }}</option>
+                    {% endfor %}
+                    </select>
+                    <button type="submit">Ir al Chat</button>
+                </form>
             </div>
-        </section>
+        </div>
     </div>
 
     <footer class="footer">

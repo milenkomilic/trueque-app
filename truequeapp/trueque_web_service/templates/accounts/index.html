@@ -67,18 +67,18 @@
             <div class="navbar-start"> 
                 {% if user.is_authenticated %}
                     <!-- Links para usuarios autenticados -->
-                    <a class="navbar-item" href="{% url 'user_profile' %}">Profile</a>
-                    <a class="navbar-item" href="{% url 'upload_item' %}">Upload</a>
-                    <a class="navbar-item" href="{% url 'view_items' %}">Market</a>
-                    <a class="navbar-item" href="{% url 'respond_to_trade' %}">Trades</a>
-                    <a class="navbar-item" href="{% url 'list_trades_for_chat' %}">Trade Chat</a>
+                    <a class="navbar-item" href="{% url 'user_profile' %}">Perfil</a>
+                    <a class="navbar-item" href="{% url 'upload_item' %}">Subir</a>
+                    <a class="navbar-item" href="{% url 'view_items' %}">Mercado</a>
+                    <a class="navbar-item" href="{% url 'respond_to_trade' %}">Notificaciones</a>
+                    <a class="navbar-item" href="{% url 'list_trades_for_chat' %}">Chat</a>
 
 
                 {% endif %}
                 <!-- Links comunes a todos los usuarios -->
-                <a class="navbar-item" href="{% url 'contacto' %}">Contact</a>
+                <a class="navbar-item" href="{% url 'contacto' %}">Contacto</a>
                 {% if user.is_authenticated %}
-                <a class="navbar-item" href="{% url 'logout' %}">Logout</a>
+                <a class="navbar-item" href="{% url 'logout' %}">Cerrar Sesion</a>
                 {% endif %}
             </div>
         </div>

@@ -6,48 +6,100 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.9.3/css/bulma.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
     <style>
-        html, body, div, section, footer {
-            margin: 0;
-            padding: 0;
-            border: none;
-        }
-        /* Tus estilos existentes aquí... */
         html, body {
             height: 100%;
-            background-color: #167341;
+            margin: 0;
+            background-color: #167341; /* Green background color */
         }
-        .content {
-            flex-grow: 1;
+        
+        body {
             display: flex;
             flex-direction: column;
+            min-height: 100vh;
         }
-        .content-wrapper {
+        
+        .section {
             flex: 1;
+            display: flex;
+            align-items: center; /* Center content vertically */
+            justify-content: center; /* Center content horizontally */
         }
-        .hero-body {
-            /* Asegúrate de que no haya demasiado padding o margen que esté empujando el contenido hacia abajo */
-            padding: 1rem;
+        
+        .container {
+            width: 100%;
+            max-width: 800px; /* Maximum width for the container */
+            padding: 20px;
+            box-sizing: border-box;
         }
-        .hero {
-            flex-grow: 1;
+        
+        .box {
+            width: 100%; /* Full width of its container */
+            max-width: 600px; /* Maximum width for the form */
+            margin: auto; /* Center the box horizontally */
+            padding: 10px;
+            background-color: #fff; /* White background for the box */
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
         }
-        .footer {
-            background-color: #333333;
-            padding: 2rem 1rem;
+        
+        /* Form elements styling */
+        .field {
+            margin-bottom: 1rem;
+        }
+        
+        .label {
+            margin-bottom: .5rem;
+        }
+        
+        input[type='text'],
+        input[type='email'],
+        textarea {
+            width: 100%;
+            padding: .5rem;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        
+        textarea {
+            resize: vertical;
+        }
+        
+        .button {
+            width: 100%;
+            padding: .8rem;
+            border: none;
+            border-radius: 4px;
+            background-color: #167341; /* Green background for the button */
             color: white;
-            text-align: center;
+            cursor: pointer;
+            margin-top: 1rem;
         }
+        
+        .button:hover {
+            background-color: #145a32; /* Darker shade for hover state */
+        }
+        
+        /* Footer styles */
+        .footer {
+            background-color: #333333; /* Color de fondo */
+            padding: 2rem 1rem; /* Espaciado interior */
+            color: white; /* Color del texto */
+            text-align: center;
+        }        
         .footer a {
             color: white; /* Color de los enlaces */
             margin: 0 10px; /* Espaciado entre enlaces */
             text-decoration: none; /* Sin subrayado */
         }
+        
         .footer a:hover {
             text-decoration: underline; /* Subrayado al pasar el mouse */
         }
+        
         .footer-icons {
             margin-top: 1rem; /* Espacio adicional encima de los íconos */
         }
+        
         /* Estilos para los íconos de redes sociales (ajusta según tus necesidades) */
         .icon {
             display: inline-block;
@@ -55,6 +107,22 @@
             color: white;
             font-size: 1.5rem; /* Tamaño de los íconos */
         }
+        
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px; /* Less padding on smaller screens */
+            }
+        
+            .hero-body {
+                padding: 0.5rem; /* Less padding in the hero on smaller screens */
+            }
+        
+            .box {
+                margin-top: 0; /* No negative margin on smaller screens */
+            }
+        }
+        
     </style>
 
 
@@ -72,68 +140,68 @@
             </a>
         </div>
         <div id="navbarBasicExample" class="navbar-menu">
-            <div class="navbar-start">
+            <div class="navbar-start"> 
                 {% if user.is_authenticated %}
                     <!-- Links para usuarios autenticados -->
-                    <a class="navbar-item" href="{% url 'user_profile' %}">Profile</a>
-                    <a class="navbar-item" href="{% url 'upload_item' %}">Upload</a>
-                    <a class="navbar-item" href="{% url 'view_items' %}">Market</a>
-                    <a class="navbar-item" href="{% url 'respond_to_trade' %}">Trades</a>
-                    <a class="navbar-item" href="{% url 'list_trades_for_chat' %}">Trade Chat</a>
+                    <a class="navbar-item" href="{% url 'user_profile' %}">Perfil</a>
+                    <a class="navbar-item" href="{% url 'upload_item' %}">Subir</a>
+                    <a class="navbar-item" href="{% url 'view_items' %}">Mercado</a>
+                    <a class="navbar-item" href="{% url 'respond_to_trade' %}">Notificaciones</a>
+                    <a class="navbar-item" href="{% url 'list_trades_for_chat' %}">Chat</a>
+
+
                 {% endif %}
                 <!-- Links comunes a todos los usuarios -->
-                <a class="navbar-item">Contact</a>
+                <a class="navbar-item" href="{% url 'contacto' %}">Contacto</a>
                 {% if user.is_authenticated %}
-                <a class="navbar-item" href="{% url 'logout' %}">Logout</a>
+                <a class="navbar-item" href="{% url 'logout' %}">Cerrar Sesion</a>
                 {% endif %}
             </div>
         </div>
     </nav>
 
-    <section class="hero custom-green-background is-medium is-flexible">
-        <div class="hero-body">
-            <div class="container">
-                <div class="columns is-centered">
-                    <div class="column is-6">
-                        <h1 class="title has-text-centered">Subir Producto</h1>
-                        <form method="post" enctype="multipart/form-data" class="box">
-                            {% csrf_token %}
-                            <!-- Renderiza todos los campos excepto 'image' -->
-                            {% for field in form %}
-                                {% if field.name != 'image' %}
-                                    <div class="field">
-                                        <label class="label" for="id_{{ field.name }}">{{ field.label }}</label>
-                                        <div class="control">
-                                            {{ field }}
-                                        </div>
-                                        {% for error in field.errors %}
-                                            <p class="help is-danger">{{ error }}</p>
-                                        {% endfor %}
-                                    </div>
+    <section class="section">
+            <form method="post" enctype="multipart/form-data" class="box">
+                <h1 class="title has-text-centered" >Subir Items</h1>
+                {% csrf_token %}
+                
+                {% for field in form %}
+                    <div class="field">
+                        <label class="label" for="id_{{ field.name }}">
+                            {% comment %} Aquí se selecciona la traducción adecuada para cada campo {% endcomment %}
+                            {% if field.name == 'title' %}
+                                Título
+                            {% elif field.name == 'description' %}
+                                Descripción
+                            {% elif field.name == 'location' %}
+                                Ubicación
+                            {% elif field.name == 'price' %}
+                                Precio
+                            {% elif field.name == 'tags' %}
+                                Etiquetas
+                            {% elif field.name == 'active' %}
+                                Activo
+                            {% elif field.name == 'image' %}
+                                Imagen
+                                    {% if form.image.errors %}
+                                        <p class="help is-danger">{{ form.image.errors }}</p>
+                                    {% endif %}
+                                {% else %}
+                                    {{ field.label }}  {# Default label if not specified #}
                                 {% endif %}
+                        <div class="control">
+                            {{ field }}
+                            {% for error in field.errors %}
+                                <p class="help is-danger">{{ error }}</p>
                             {% endfor %}
-                            
-                            <!-- Ahora renderiza el campo 'image' manualmente -->
-                            <div class="field">
-                                <label class="label" for="id_image">Imagen</label>
-                                <div class="control">
-                                    {{ form.image }}
-                                </div>
-                                {% if form.image.errors %}
-                                    <p class="help is-danger">{{ form.image.errors }}</p>
-                                {% endif %}
-                            </div>
-                            <div class="control">
-                                    <button type="submit" class="button is-link is-fullwidth">Subir</button>
-                                </div>
-                        </form>
+                        </div>
                     </div>
-                </div>
-            </div>
-        </div>
+                {% endfor %}                
+                <div class="control">
+                        <button type="submit" class="button is-link is-fullwidth">Subir</button>
+                    </div>
+            </form>
     </section>
-  
-    
 
     <footer class="footer">
         <p>© Truequeapp - All Rights Reserved</p>
@@ -188,46 +256,12 @@
 
 
 
-{% comment %} 
-<form method="post" enctype="multipart/form-data" class="box">
-    {% csrf_token %}
-    {% for field in form %}
-        <div class="field">
-            <label class="label" for="id_{{ field.name }}">{{ field.label }}</label>
-            <div class="control">
-                {% if field.name == 'active' %}
-                    <!-- Renderiza el campo 'active' como un toggle switch -->
-                    <label class="switch">
-                        <input type="checkbox" id="id_{{ field.name }}" name="{{ field.name }}" {% if field.value %} checked {% endif %}>
-                        <span class="slider round"></span>
-                    </label>
-                {% elif field.name == 'description' %}
-                    <!-- Campo de descripción -->
-                    <textarea class="textarea" id="id_{{ field.name }}" name="{{ field.name }}" rows="4"></textarea>
-                {% else %}
-                    <!-- Otros campos -->
-                    <input class="{{ field.field.widget.input_type }}" id="id_{{ field.name }}" name="{{ field.name }}" class="input">
-                {% endif %}
-            </div>
-            {% for error in field.errors %}
-                <p class="help is-danger">{{ error }}</p>
-            {% endfor %}
-        </div>
-    {% endfor %}
-        
-    <div class="field">
-        <label class="label" for="id_image">Imagen</label>
-        <div class="control">
-            <input type="file" id="id_image" name="image" accept="image/*" class="input">
-        </div>
-        {% if form.image.errors %}
-            <p class="help is-danger">{{ form.image.errors.as_text }}</p>
-        {% endif %}
-    </div>
 
 
-        <div class="control">
-            <button type="submit" class="button is-link is-fullwidth">Subir</button>
-        </div>
-    </div>
-</form> {% endcomment %}
+
+
+
+
+
+
+

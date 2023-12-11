@@ -10,29 +10,41 @@
         html, body {
             height: 100%;
             margin: 0;
+            background-color: #167341; /* Green background color */
         }
+        
         body {
             display: flex;
             flex-direction: column;
-            min-height: 100vh;
-            background-color: #167341; /* Color de fondo para todo el cuerpo */
+            justify-content: space-between; /* This will space out the nav, main content, and footer */
         }
-        .content {
+        
+        .section {
             flex-grow: 1;
             display: flex;
             flex-direction: column;
+            justify-content: center; /* Center content vertically */
+            align-items: center; /* Center content horizontally */
+            padding: 20px;
         }
-        .content-wrapper {
-            flex: 1;
+        
+        .container {
+            width: 100%;
+            max-width: 800px; /* Maximum width for the container */
+            padding: 20px;
+            box-sizing: border-box;
         }
-        .hero {
-            /* Ajusta esta altura según necesites */
-            height: auto; 
+        
+        .box {
+            width: 100%; /* Full width of its container */
+            max-width: 600px; /* Maximum width for the form */
+            margin: auto; /* Center the box horizontally */
+            padding: 20px;
+            background-color: #fff; /* White background for the box */
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
         }
-        .hero-body {
-            /* Asegúrate de que no haya demasiado padding o margen que esté empujando el contenido hacia abajo */
-            padding: 1rem;
-        }
+        
         .footer {
             background-color: #333333; /* Color de fondo */
             padding: 2rem 1rem; /* Espaciado interior */
@@ -60,63 +72,15 @@
             color: white;
             font-size: 1.5rem; /* Tamaño de los íconos */
         }
-        .card {
-            display: flex;
-            flex-direction: column;
-            height: 100%;
-        }
         
-        .card-content {
-            flex-grow: 1;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-        }
-        
-        .card-footer {
-            background-color: white;
-            border-top: none;
-        }
-        
-        .card-footer-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        
-        .card-footer .button {
-            margin-right: 10px;
-        }
-        
-        .image img {
-            display: block;
-            width: 100%;
-            height: auto;
-        }
-        /* Pagination buttons */
-        .pagination-link, .pagination-next, .pagination-previous {
-            background-color: #ffffff; /* White background */
-            color: #167341; /* Color that matches your site's theme */
-            border: 1px solid #167341; /* Border to make it stand out */
-            text-decoration: none; /* Remove underline */
-            padding: 0.5em 0.75em; /* Padding for spacing */
-            margin: 0.25em; /* Margin for spacing around buttons */
-        }
-
-        /* Current page button */
-        .pagination-link.is-current {
-            background-color: #167341; /* Theme color background */
-            color: #ffffff; /* White text */
-            border-color: #167341;
-        }
-
-        /* Hover effect */
-        .pagination-link:hover, .pagination-next:hover, .pagination-previous:hover {
-            background-color: #145a32; /* Darker shade for hover effect */
-            color: #ffffff;
-            border-color: #145a32;
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .section {
+                padding: 10px; /* Less padding on smaller screens */
+            }
         }
     </style>
+
 </head>
 <body>
 
@@ -132,19 +96,21 @@
             </a>
         </div>
         <div id="navbarBasicExample" class="navbar-menu">
-            <div class="navbar-start">
+            <div class="navbar-start"> 
                 {% if user.is_authenticated %}
                     <!-- Links para usuarios autenticados -->
-                    <a class="navbar-item" href="{% url 'user_profile' %}">Profile</a>
-                    <a class="navbar-item" href="{% url 'upload_item' %}">Upload</a>
-                    <a class="navbar-item" href="{% url 'view_items' %}">Market</a>
-                    <a class="navbar-item" href="{% url 'respond_to_trade' %}">Trades</a>
-                    <a class="navbar-item" href="{% url 'list_trades_for_chat' %}">Trade Chat</a>
+                    <a class="navbar-item" href="{% url 'user_profile' %}">Perfil</a>
+                    <a class="navbar-item" href="{% url 'upload_item' %}">Subir</a>
+                    <a class="navbar-item" href="{% url 'view_items' %}">Mercado</a>
+                    <a class="navbar-item" href="{% url 'respond_to_trade' %}">Notificaciones</a>
+                    <a class="navbar-item" href="{% url 'list_trades_for_chat' %}">Chat</a>
+
+
                 {% endif %}
                 <!-- Links comunes a todos los usuarios -->
-                <a class="navbar-item">Contact</a>
+                <a class="navbar-item" href="{% url 'contacto' %}">Contacto</a>
                 {% if user.is_authenticated %}
-                <a class="navbar-item" href="{% url 'logout' %}">Logout</a>
+                <a class="navbar-item" href="{% url 'logout' %}">Cerrar Sesion</a>
                 {% endif %}
             </div>
         </div>
@@ -152,77 +118,76 @@
 
 {% load static %}  <!-- Asegúrate de cargar la etiqueta static al comienzo de tu archivo HTML -->
 
-<div class="content-wrapper">
-    <section class="hero custom-green-background is-medium">
-        <div class="hero-body">
-            <div class="container">
-                <h1 class="title">Items</h1>
-                <div class="columns is-multiline">
-                    {% for item in page_obj %}
-                        <div class="column is-one-quarter">
-                            <div class="card">
-                                <div class="card-image">
-                                    <figure class="image is-4by3">
-                                        {% if item.image %}
-                                            <img src="{{ item.image.url }}" alt="{{ item.title }}">
-                                        {% else %}
-                                            <!-- Imagen por defecto utilizando la etiqueta static -->
-                                            <img src="{% static 'images/perrito.jpg' %}" alt="Imagen por defecto">
-                                        {% endif %}
-                                    </figure>
-                                </div>
-                                <div class="card-content">
-                                    <div class="media">
-                                        <div class="media-content">
-                                            <p class="title is-4">{{ item.title }}</p>
-                                            <p class="subtitle is-6">{{ item.user.username }}</p>
-                                            <p class="subtitle is-6">{{ item.location }}</p>
-                                        </div>
-                                    </div>
-
-                                    <div class="content">
-                                        {{ item.description|truncatewords:30 }}
-                                        <br>
-                                        <time datetime="{{ item.date_posted }}">{{ item.date_posted }}</time>
-                                    </div>
-                                </div>
-                                <footer class="card-footer">
-                                    <p class="card-footer-item">
-                                        <span class="title is-3">{{ item.price }}</span>
-                                    </p>
-                                    {% if user.is_authenticated and item.user != user %}
-                                        <a href="{% url 'initiate_trade' item.id %}" class="button is-primary">Cambiar</a>
-                                    {% endif %}
-                                </footer>
+<div class="container">
+    {% if messages %}
+            <div class="notification is-danger">
+                {% for message in messages %}
+                    <p>{{ message }}</p>
+                {% endfor %}
+            </div>
+        {% endif %}
+    <h1 class="title has-text-centered" style="color: white;">Mercado</h1>
+    <div class="columns is-multiline">
+        {% for item in page_obj %}
+            <div class="column is-one-quarter">
+                <div class="card">
+                    <div class="card-image">
+                        <figure class="image is-4by3">
+                            {% if item.image %}
+                                <img src="{{ item.image.url }}" alt="{{ item.title }}">
+                            {% else %}
+                                <!-- Imagen por defecto utilizando la etiqueta static -->
+                                <img src="{% static 'images/perrito.jpg' %}" alt="Imagen por defecto">
+                            {% endif %}
+                        </figure>
+                    </div>
+                    <div class="card-content">
+                        <div class="media">
+                            <div class="media-content">
+                                <p class="title is-4">{{ item.title }}</p>
+                                <p class="subtitle is-6">{{ item.user.username }}</p>
+                                <p class="subtitle is-6">{{ item.location }}</p>
                             </div>
                         </div>
-                    {% empty %}
-                        <p>No hay items disponibles.</p>
-                    {% endfor %}
+
+                        <div class="content">
+                            {{ item.description|truncatewords:30 }}
+                            <br>
+                            <time datetime="{{ item.date_posted }}">{{ item.date_posted }}</time>
+                        </div>
+                    </div>
+                    <footer class="card-footer">
+                        <p class="card-footer-item">
+                            <span class="title is-3">{{ item.price }}</span>
+                        </p>
+                        {% if user.is_authenticated and item.user != user %}
+                            <a href="{% url 'initiate_trade' item.id %}" class="button is-primary">Cambiar</a>
+                        {% endif %}
+                    </footer>
                 </div>
-                <nav class="pagination" role="navigation" aria-label="pagination">
-                    {% if page_obj.has_previous %}
-                        <a href="?page={{ page_obj.previous_page_number }}" class="pagination-previous">Anterior</a>
-                    {% endif %}
-                    {% if page_obj.has_next %}
-                        <a href="?page={{ page_obj.next_page_number }}" class="pagination-next">Siguiente</a>
-                    {% endif %}
-                    <ul class="pagination-list">
-                        {% for num in page_obj.paginator.page_range %}
-                            {% if page_obj.number == num %}
-                                <li><a class="pagination-link is-current">{{ num }}</a></li>
-                            {% else %}
-                                <li><a href="?page={{ num }}" class="pagination-link">{{ num }}</a></li>
-                            {% endif %}
-                        {% endfor %}
-                    </ul>
-                </nav>
             </div>
-        </div>
-    </section>
+        {% empty %}
+            <h1 class="title has-text-centered" style="color: white;">No hay items disponibles</h1>
+        {% endfor %}
+    </div>
+    <nav class="pagination" role="navigation" aria-label="pagination">
+        {% if page_obj.has_previous %}
+            <a href="?page={{ page_obj.previous_page_number }}" class="pagination-previous">Anterior</a>
+        {% endif %}
+        {% if page_obj.has_next %}
+            <a href="?page={{ page_obj.next_page_number }}" class="pagination-next">Siguiente</a>
+        {% endif %}
+        <ul class="pagination-list">
+            {% for num in page_obj.paginator.page_range %}
+                {% if page_obj.number == num %}
+                    <li><a class="pagination-link is-current">{{ num }}</a></li>
+                {% else %}
+                    <li><a href="?page={{ num }}" class="pagination-link">{{ num }}</a></li>
+                {% endif %}
+            {% endfor %}
+        </ul>
+    </nav>
 </div>
-
-
 
 
     <footer class="footer">
