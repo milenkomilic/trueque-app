@@ -3,8 +3,9 @@ from django.contrib.auth import login, get_user_model
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect, get_object_or_404
 from django.utils import timezone
+from datetime import timedelta
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
-from .models import Item, Trade, ChatMessage
+from .models import Item, LoginAttempt, Trade, ChatMessage
 from .forms import CustomUserCreationForm, ItemForm, PasswordResetForm, SetPasswordForm
 from .forms import CustomUserEditForm
 from django.db.models import Q
@@ -20,6 +21,7 @@ from django.template.loader import render_to_string
 from .token import account_activation_token  
 from django.contrib.auth.models import User
 from django.core.mail import EmailMessage
+
 
 User = get_user_model()
 
@@ -202,10 +204,41 @@ def contacto_view(request):
 def login_view(request):
     if request.method == 'POST':
         form = AuthenticationForm(request, data=request.POST)
-        if form.is_valid ():
-            user = form.get_user()
+        username_or_email = request.POST.get('username')
+        password = request.POST.get('password')
+        
+        # Comprueba si el campo corresponde a un email o nombre de usuario
+        if '@' in username_or_email:
+            user = User.objects.filter(email=username_or_email).first()
+        else:
+            user = User.objects.filter(username=username_or_email).first()
+        
+        # Verifica si el usuario existe y la contraseña es correcta
+        if user is not None and user.check_password(password):
+            # Verifica si el usuario ha intentado iniciar sesión demasiadas veces
+            last_minute = timezone.now() - timedelta(minutes=15)
+            failed_attempts = LoginAttempt.objects.filter(
+                custom_user=user, 
+                timestamp__gte=last_minute, 
+                successful=False
+            ).count()
+            
+            if failed_attempts >= 3:
+                return HttpResponse('Tu cuenta ha sido bloqueada temporalmente. Inténtalo de nuevo en 15 minutos.')
+            
+            # Inicio de sesión exitoso
             login(request, user)
+            
+            # Registrar el intento exitoso
+            LoginAttempt.objects.create(custom_user=user, successful=True)
             return redirect('index')
+        else:
+            # Intento de inicio de sesión fallido
+            if user:
+                LoginAttempt.objects.create(custom_user=user, successful=False)
+            
+            return render(request, 'accounts/login.html', {'form': form, 'error_message': 'Nombre de usuario o contraseña incorrecta.'})
+            
     else:
         form = AuthenticationForm()
     return render(request, 'accounts/login.html', {'form': form})
@@ -378,13 +411,25 @@ def edit_profile(request):
 def update_item(request):
     if request.method == 'POST':
         item_id = request.POST.get('id')
+        item = get_object_or_404(Item, id=item_id, user=request.user)
+        
+        # Verifica si el ítem está involucrado en un trueque activo
+        active_trades = Trade.objects.filter(
+            (Q(initiator_item=item) | Q(responder_item=item)) & 
+            Q(active=True)
+        ).exists()
+
+        if active_trades:
+            # Si el ítem está involucrado en un trueque activo, no permitir la edición
+            return JsonResponse({'status': 'error', 'message': 'No puedes editar un ítem que está en un trueque activo.'}, status=400)
+
+        # Si no hay trueques activos, permite la edición
         title = request.POST.get('title')
         price = request.POST.get('price')
         description = request.POST.get('description')
         active = request.POST.get('active') == 'true'
 
-        # Encuentra y actualiza el ítem
-        item = get_object_or_404(Item, id=item_id, user=request.user)
+        # Actualiza el ítem
         item.title = title
         item.price = price
         item.description = description
@@ -393,7 +438,8 @@ def update_item(request):
 
         return JsonResponse({'status': 'success'})
 
-    return JsonResponse({'status': 'error'}, status=400)
+    return JsonResponse({'status': 'error', 'message': 'Método no permitido'}, status=405)
+
 
 @csrf_exempt
 @login_required

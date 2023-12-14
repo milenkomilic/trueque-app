@@ -167,7 +167,7 @@
     </section>   
 
     <footer class="footer">
-        <p>© Truequeapp - All Rights Reserved</p>
+        <p>© Truequeapp - Derechos Reservados</p>
         <div class="footer-links">
             <a href="#">Acerca de</a>
             <a href="#">Contacto</a>
@@ -220,18 +220,17 @@
             
             $('#btn-save-profile').click(function(e) {
                 e.preventDefault();
-                // Recoge los valores de los campos
+
                 let name = $('#name').val();
                 let lastname = $('#lastname').val();
                 let lastname_m = $('#lastname_m').val();
                 let date_of_birth = $('#date_of_birth').val();
-                // ... los otros campos ...
 
                 // AJAX call para enviar los datos al servidor
                 $.ajax({
-                    url: '{% url "edit_profile" %}',  // Asegúrate de tener esta URL en tus urls.py
+                    url: '{% url "edit_profile" %}', 
                     type: 'POST',
-                    headers: { "X-CSRFToken": "{{ csrf_token }}" },  // Asegúrate de enviar el token CSRF
+                    headers: { "X-CSRFToken": "{{ csrf_token }}" }, 
                     data: {
                         'name': name,
                         'lastname': lastname,

@@ -37,7 +37,7 @@ class CustomUser(AbstractBaseUser):
 class LoginAttempt(models.Model):
     custom_user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     timestamp = models.DateTimeField(auto_now_add=True)
-
+    successful = models.BooleanField(default=False)
 
 # Modelo Trade
 class Trade(models.Model):

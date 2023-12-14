@@ -20,26 +20,23 @@
         }
         
         .footer {
-            background-color: #333333;
-            color: white;
+            background-color: #333333; /* Color de fondo */
+            padding: 2rem 1rem; /* Espaciado interior */
+            color: white; /* Color del texto */
             text-align: center;
-            padding: 20px 0;
-            margin-top: auto; /* Esto empujará el footer hacia abajo */
-        }
-        
-        /* Estilos para íconos y enlaces del footer, si es necesario */
+        }        
         .footer a {
-            color: white;
-            margin: 0 10px;
-            text-decoration: none;
+            color: white; /* Color de los enlaces */
+            margin: 0 10px; /* Espaciado entre enlaces */
+            text-decoration: none; /* Sin subrayado */
         }
         
         .footer a:hover {
-            text-decoration: underline;
+            text-decoration: underline; /* Subrayado al pasar el mouse */
         }
         
         .footer-icons {
-            margin-top: 1rem;
+            margin-top: 1rem; /* Espacio adicional encima de los íconos */
         }
         
         .icon {
@@ -89,17 +86,17 @@
             <div class="hero-body">
                 <div class="container has-text-centered">
                     <p class="title has-text-white">
-                        Welcome to Truequeapp!
+                        Bienvenido a Truequeapp!
                     </p>
                     <p class="subtitle has-text-white">
-                        Your one-stop hub for all your needs.
+                        Tu lúgar para intercambiar bienes y servicios.
                     </p>
                         {% if user.is_authenticated %}
-                            <p>El usuario está autenticado</p>
+                            <p class="subtitle has-text-white">{{ user.name }} {{ user.lastname }} {{ user.lastname_m }}</p>
                         {% else %}
                             <div class="buttons is-centered">
                                 <a href="{% url 'login' %}" class="button is-light">Login</a>
-                                <a href="{% url 'signup' %}" class="button is-dark">Sign Up</a>
+                                <a href="{% url 'signup' %}" class="button is-dark">Registro</a>
                             </div>
                             <p>El usuario no está autenticado</p>
                         {% endif %}
@@ -109,7 +106,7 @@
     </div>
 
     <footer class="footer">
-        <p>© Truequeapp - All Rights Reserved</p>
+        <p>© Truequeapp - Derechos reservados</p>
         <div class="footer-links">
             <a href="#">Acerca de</a>
             <a href="#">Contacto</a>

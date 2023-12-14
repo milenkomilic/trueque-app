@@ -2,6 +2,8 @@ from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from .models import CustomUser
 from .models import Item, Trade
+from django.core.exceptions import ValidationError
+from datetime import date
 
 class PasswordResetForm(forms.Form):
     email = forms.EmailField()
@@ -43,6 +45,14 @@ class CustomUserCreationForm(UserCreationForm):
         widget=forms.DateInput(attrs={'type': 'date'})
     )
     email = forms.EmailField(required=True)
+
+    def clean_date_of_birth(self):
+        dob = self.cleaned_data['date_of_birth']
+        today = date.today()
+        age = today.year - dob.year - ((today.month, today.day) < (dob.month, dob.day))
+        if age < 18:
+            raise ValidationError("Debes tener al menos 18 años para registrarte.")
+        return dob
 
     class Meta:
         model = CustomUser
