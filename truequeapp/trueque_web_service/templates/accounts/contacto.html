@@ -2,82 +2,98 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Profile</title>
+    <title>Welcome to Truequeapp</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.9.3/css/bulma.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
     <style>
-        html, body {
-            height: 100%;
-            margin: 0;
-        }
         body {
+            font-family: 'Arial', sans-serif;
+            background: #167341;
+            margin: 0;
+            padding: 0;
             display: flex;
             flex-direction: column;
             min-height: 100vh;
-            background-color: #167341;
         }
-        .section { /* Esta es la clase de tu contenido principal */
-            flex: 1; /* Esto hará que el contenido principal ocupe todo el espacio disponible */
-            display: flex;
-            flex-direction: column;
-        }
-        .box {
-            width: 80%; /* Ajusta el ancho al 80% de su contenedor padre */
-            margin: auto; /* Centra el box horizontalmente */
-            padding: 20px; /* Añade padding para más espacio interno */
-            /* Puedes agregar más estilos aquí según sea necesario */
-        }
-
-        /* Asegúrate de que el container también tenga el ancho adecuado */
-        .container {
-            width: 100%; /* O el ancho que prefieras */
-            /* Más estilos si es necesario */
-        }
-        .content {
+        
+        .main-content {
             flex-grow: 1;
             display: flex;
             flex-direction: column;
-        }
-        .content-wrapper {
-            flex: 1;
-        }
-        .hero {
-            /* Ajusta esta altura según necesites */
-            height: auto; 
-        }
-        .hero-body {
-            /* Asegúrate de que no haya demasiado padding o margen que esté empujando el contenido hacia abajo */
+            justify-content: center;
+            align-items: center;
             padding: 1rem;
+            margin: auto;
         }
-        .footer {
-            background-color: #333333; /* Color de fondo */
-            padding: 2rem 1rem; /* Espaciado interior */
-            color: white; /* Color del texto */
+        
+        .contact-container {
+            width: 100%;
+            max-width: 600px;
+            margin: 2rem auto;
+            padding: 1rem;
+            background: #fff;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            border-radius: 8px;
             text-align: center;
-        }        
+        }
+        
+        .map-container {
+            margin-top: 1rem;
+        }
+        
+        .image-container img {
+            max-width: 100%;
+            border-radius: 4px;
+        }
+        
+        .contact-container h2 {
+            color: #333;
+            margin-bottom: 1rem;
+            font-size: 2rem;
+        }
+        
+        .contact-info p {
+            margin-bottom: 0.5rem;
+            color: #444;
+            line-height: 1.5;
+        }
+        
+        .footer {
+            background-color: #333333;
+            padding: 2rem 1rem;
+            color: white;
+            text-align: center;
+            margin-top: auto;
+        }
+        
         .footer a {
-            color: white; /* Color de los enlaces */
-            margin: 0 10px; /* Espaciado entre enlaces */
-            text-decoration: none; /* Sin subrayado */
+            color: white;
+            margin: 0 10px;
+            text-decoration: none;
         }
         
         .footer a:hover {
-            text-decoration: underline; /* Subrayado al pasar el mouse */
+            text-decoration: underline;
         }
         
         .footer-icons {
-            margin-top: 1rem; /* Espacio adicional encima de los íconos */
+            margin-top: 1rem;
         }
         
-        /* Estilos para los íconos de redes sociales (ajusta según tus necesidades) */
         .icon {
             display: inline-block;
             margin: 0 5px;
             color: white;
-            font-size: 1.5rem; /* Tamaño de los íconos */
+            font-size: 1.5rem;
         }
-
+        
+        @media (max-width: 768px) {
+            .contact-container {
+                margin: 1rem;
+            }
+        }
     </style>
+    
 </head>
 <body>
     <nav class="navbar is-dark" role="navigation" aria-label="main navigation">
@@ -112,50 +128,26 @@
         </div>
     </nav>
 
-    <section class="section">
-        <div class="container">
-            <div class="box">
-                <h1 class="title has-text-centered">Perfil</h1>
-                <article class="media">
-                    <div class="media-content">
-                        <div class="content">
-                            <p class="title is-4">Nombre</p>
-                            <p class="subtitle is-6">{{ user.name }} {{ user.lastname }} {{ user.lastname_m }}</p>
-                        </div>
-                    </div>
-                </article>
-                <hr>
-                <article class="media">
-                    <div class="media-content">
-                        <div class="content">
-                            <p class="title is-4">Email</p>
-                            <p class="subtitle is-6">{{ user.email }}</p>
-                        </div>
-                    </div>
-                </article>
-                <hr>
-                <article class="media">
-                    <div class="media-content">
-                        <div class="content">
-                            <p class="title is-4">Fecha de nacimiento</p>
-                            <p class="subtitle is-6">{{ user.date_of_birth|date:"Y-m-d" }}</p>
-                        </div>
-                    </div>
-                </article>
-                <article class="media">
-                    <div class="media-content">
-                        <div class="container center">
-                            <a href="{% url 'my_items' %}" class="button is-primary">Ver mis items</a>
-                            <a href="{% url 'edit_profile' %}" class="button is-primary">Editar tu perfil</a>
-                        </div>
-                    </div>
-                </article>
+    <div class="main-content">
+        <div class="contact-container">
+            <h2>Contacto Casa Central Truequeapp</h2>
+            <div class="contact-info">
+                <p><strong>Nombre de la Empresa:</strong> Truequeapp S.A.</p>
+                <p><strong>Teléfono:</strong> +1 234 567 8900</p>
+                <p><strong>Correo Electrónico:</strong> contacto@truequeapp.com</p>
+                <p><strong>Dirección:</strong> 123 Calle Santa Helena, Santiago, Chile</p>
+                <div class="map-container">
+                    <div class="image-container">
+                        <img src="https://i.ibb.co/CJS0fqf/ecc.png" alt="Edificio Truequeapp">
+                    </div>                           
+                </div>
             </div>
         </div>
-    </section>
+    </div>
+   
 
     <footer class="footer">
-        <p>© Truequeapp - Derechos reservados</p>
+        <p>© Truequeapp - Derechos Reservados</p>
         <div class="footer-links">
             <a href="#">Acerca de</a>
             <a href="#">Contacto</a>
@@ -195,7 +187,5 @@
             }
         });
     </script>
-
-
 </body>
 </html>

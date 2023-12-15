@@ -2,20 +2,104 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Sign Up</title>
+    <title>Registro Truequeapp</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.9.3/css/bulma.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
+    <style>
+        html, body {
+            height: 100%;
+            margin: 0;
+        }
+        body {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            background-color: #167341; /* Color de fondo para todo el cuerpo */
+        }
+        .content {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        .content-wrapper {
+            flex: 1;
+        }
+        .hero {
+            /* Ajusta esta altura según necesites */
+            height: auto; 
+        }
+        .hero-body {
+            /* Asegúrate de que no haya demasiado padding o margen que esté empujando el contenido hacia abajo */
+            padding: 1rem;
+        }
+        .footer {
+            background-color: #333333; /* Color de fondo */
+            padding: 2rem 1rem; /* Espaciado interior */
+            color: white; /* Color del texto */
+            text-align: center;
+        }        
+        .footer a {
+            color: white; /* Color de los enlaces */
+            margin: 0 10px; /* Espaciado entre enlaces */
+            text-decoration: none; /* Sin subrayado */
+        }
+        
+        .footer a:hover {
+            text-decoration: underline; /* Subrayado al pasar el mouse */
+        }
+        
+        .footer-icons {
+            margin-top: 1rem; /* Espacio adicional encima de los íconos */
+        }
+        
+        /* Estilos para los íconos de redes sociales (ajusta según tus necesidades) */
+        .icon {
+            display: inline-block;
+            margin: 0 5px;
+            color: white;
+            font-size: 1.5rem; /* Tamaño de los íconos */
+        }
+
+    </style>
 </head>
 <body>
+    <nav class="navbar is-dark" role="navigation" aria-label="main navigation">
+        <div class="navbar-brand">
+            <a class="navbar-item" href="{% url 'index' %}">
+                <strong>Truequeapp</strong>
+            </a>
+            <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false" data-target="navbarBasicExample">
+                <span aria-hidden="true"></span>
+                <span aria-hidden="true"></span>
+                <span aria-hidden="true"></span>
+            </a>
+        </div>
+        <div id="navbarBasicExample" class="navbar-menu">
+            <div class="navbar-start">
+                <!-- Links comunes a todos los usuarios -->
+                <a class="navbar-item">Contacto</a>
+            </div>
+        </div>
+    </nav>
+
     <section class="section">
         <div class="container">
             <div class="columns is-centered">
                 <div class="column is-5-tablet is-4-desktop is-3-widescreen">
+                    {% if messages %}
+                        <div class="notification is-danger">
+                            {% for message in messages %}
+                                <p>{{ message }}</p>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
                     <form method="post" class="box">
-                        <h1 class="title has-text-centered">Sign Up</h1>
+                        <h1 class="title has-text-centered">Registro</h1>
                         {% csrf_token %}
-                        <!-- Renderiza cada campo manualmente -->
+
+                        <!-- Campo de Username -->
                         <div class="field">
-                            <label class="label">Username</label>
+                            <label class="label">Nombre de usuario</label>
                             <div class="control">
                                 {{ form.username }}
                                 {% if form.username.errors %}
@@ -23,8 +107,67 @@
                                 {% endif %}
                             </div>
                         </div>
+
+                        <!-- Campos adicionales -->
+
+                        <!-- Campo de Name -->
                         <div class="field">
-                            <label class="label">Password</label>
+                            <label class="label">Nombre personal</label>
+                            <div class="control">
+                                {{ form.name }}
+                                {% if form.name.errors %}
+                                    <p class="help is-danger">{{ form.name.errors.as_text }}</p>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <!-- Campo de Lastname -->
+                        <div class="field">
+                            <label class="label">Apellido paterno</label>
+                            <div class="control">
+                                {{ form.lastname }}
+                                {% if form.lastname.errors %}
+                                    <p class="help is-danger">{{ form.lastname.errors.as_text }}</p>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <!-- Campo de Lastname Maternal -->
+                        <div class="field">
+                            <label class="label">Apellido materno</label>
+                            <div class="control">
+                                {{ form.lastname_m }}
+                                {% if form.lastname_m.errors %}
+                                    <p class="help is-danger">{{ form.lastname_m.errors.as_text }}</p>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <!-- Campo de Date of Birth -->
+                        <div class="field">
+                            <label class="label">Fecha de nacimiento</label>
+                            <div class="control">
+                                {{ form.date_of_birth }}
+                                {% if form.date_of_birth.errors %}
+                                    <p class="help is-danger">{{ form.date_of_birth.errors.as_text }}</p>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <!-- Campo de Email -->
+                        <div class="field">
+                            <label class="label">Correo electronico</label>
+                            <div class="control">
+                                {{ form.email }}
+                                {% if form.email.errors %}
+                                    <p class="help is-danger">{{ form.email.errors.as_text }}</p>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <!-- Campos de Contraseña -->
+                        <div class="field">
+                            <label class="label">Contraseña</label>
                             <div class="control">
                                 {{ form.password1 }}
                                 {% if form.password1.errors %}
@@ -33,7 +176,7 @@
                             </div>
                         </div>
                         <div class="field">
-                            <label class="label">Password Confirmation</label>
+                            <label class="label">Confirmación de contraseña</label>
                             <div class="control">
                                 {{ form.password2 }}
                                 {% if form.password2.errors %}
@@ -41,12 +184,68 @@
                                 {% endif %}
                             </div>
                         </div>
-                        <button class="button is-primary is-fullwidth" type="submit">Sign Up</button>
+
+                        <!-- Botón de Envío -->
+                        <button class="button is-primary is-fullwidth" type="submit">Registrarme</button>
                     </form>
-                    <p class="has-text-centered">¿Ya tienes una cuenta? <a href="{% url 'login' %}">Inicia sesión aquí</a></p>
+                    <p class="has-text-centered" style="color: white;">¿Ya tienes una cuenta? <a href="{% url 'login' %}" style="color: yellow;">Inicia sesión aquí</a></p>
+                    <p class="has-text-centered" style="color: white;">¿Perdiste tu contraseña? <a href="{% url 'password_reset' %}" style="color: yellow;">Recuperala aquí</a></p>
                 </div>
             </div>
         </div>
     </section>
+
+    <footer class="footer">
+        <p>© Truequeapp - Derechos reservados</p>
+        <div class="footer-links">
+            <a href="#">Acerca de</a>
+            <a href="#">Contacto</a>
+            <!-- Agrega más enlaces si lo deseas -->
+        </div>
+        <div class="footer-icons">
+            <!-- Ejemplo de íconos, puedes usar una librería como FontAwesome -->
+            <a href="#" class="icon"><i class="fab fa-facebook"></i></a>
+            <a href="#" class="icon"><i class="fab fa-twitter"></i></a>
+            <a href="#" class="icon"><i class="fab fa-instagram"></i></a>
+            <!-- Agrega más íconos de redes sociales si lo deseas -->
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Obtén todas las "navbar-burger" elementos
+            const $navbarBurgers = Array.prototype.slice.call(document.querySelectorAll('.navbar-burger'), 0);
+    
+            // Verifica si hay navbar burgers
+            if ($navbarBurgers.length > 0) {
+    
+                // Añade un evento de clic en cada uno
+                $navbarBurgers.forEach(el => {
+                    el.addEventListener('click', () => {
+    
+                        // Obtiene el valor del atributo "data-target"
+                        const target = el.dataset.target;
+                        const $target = document.getElementById(target);
+    
+                        // Alterna las clases "is-active" en el "navbar-burger" y el "navbar-menu"
+                        el.classList.toggle('is-active');
+                        $target.classList.toggle('is-active');
+    
+                    });
+                });
+            }
+        });
+    </script>
+
 </body>
 </html>
+
+
+
+
+
+
+
+
+
+

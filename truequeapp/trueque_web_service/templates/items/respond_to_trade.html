@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Profile</title>
+    <title>Welcome to Truequeapp</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.9.3/css/bulma.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
     <style>
@@ -14,29 +14,18 @@
             display: flex;
             flex-direction: column;
             min-height: 100vh;
-            background-color: #167341;
-        }
-        .section { /* Esta es la clase de tu contenido principal */
-            flex: 1; /* Esto hará que el contenido principal ocupe todo el espacio disponible */
-            display: flex;
-            flex-direction: column;
-        }
-        .box {
-            width: 80%; /* Ajusta el ancho al 80% de su contenedor padre */
-            margin: auto; /* Centra el box horizontalmente */
-            padding: 20px; /* Añade padding para más espacio interno */
-            /* Puedes agregar más estilos aquí según sea necesario */
-        }
-
-        /* Asegúrate de que el container también tenga el ancho adecuado */
-        .container {
-            width: 100%; /* O el ancho que prefieras */
-            /* Más estilos si es necesario */
+            background-color: #167341; /* Color de fondo para todo el cuerpo */
         }
         .content {
             flex-grow: 1;
             display: flex;
             flex-direction: column;
+        }
+        .container {
+            width: 33%;
+            max-width: 800px; /* Maximum width for the container */
+            padding: 20px;
+            box-sizing: border-box;
         }
         .content-wrapper {
             flex: 1;
@@ -112,48 +101,59 @@
         </div>
     </nav>
 
-    <section class="section">
+    {% block content %}
         <div class="container">
+            <h1 class="title has-text-centered" style="color: white;">Notificaciones de trueque</h1>
+            {% for trade in trade_offers %}
+                {% if messages %}
+                    {% for message in messages %}
+                        <div class="notification {% if message.tags %}is-{{ message.tags }}{% endif %}">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                {% endif %}
+                <div class="box">
+                    <article class="media">
+                        <div class="media-left">
+                            <!-- Image of the item being offered -->
+                            <figure class="image is-128x128">
+                                {% if trade.initiator_item.image %}
+                                    <img src="{{ trade.initiator_item.image.url }}" alt="Image of {{ trade.initiator_item.title }}">
+                                {% endif %}
+                            </figure>
+
+                        </div>
+                        <div class="media-content">
+                            <div class="content">
+                                <p>
+                                    <strong>Nombre: </strong> {{ trade.initiator_item.title }} <br>
+                                    <strong>Emisor: </strong> {{ trade.initiator.username }} <br>
+                                    <strong>Descripción: </strong> {{ trade.initiator_item.description }} <br>
+                                    <strong>Estado: </strong> {{ trade.status }}
+                                </p>
+                            </div>
+                        </div>
+                        <div class="media-right">
+                            <form method="post">
+                                {% csrf_token %}
+                                <input type="hidden" name="trade_id" value="{{ trade.id }}">
+                                <button class="button is-success" type="submit" name="accept">Acceptar</button>
+                                <button class="button is-danger" type="submit" name="decline">Declinar</button>
+                            </form>
+                        </div>
+                    </article>
+                </div>
+            {% empty %}
             <div class="box">
-                <h1 class="title has-text-centered">Perfil</h1>
                 <article class="media">
-                    <div class="media-content">
-                        <div class="content">
-                            <p class="title is-4">Nombre</p>
-                            <p class="subtitle is-6">{{ user.name }} {{ user.lastname }} {{ user.lastname_m }}</p>
-                        </div>
-                    </div>
-                </article>
-                <hr>
-                <article class="media">
-                    <div class="media-content">
-                        <div class="content">
-                            <p class="title is-4">Email</p>
-                            <p class="subtitle is-6">{{ user.email }}</p>
-                        </div>
-                    </div>
-                </article>
-                <hr>
-                <article class="media">
-                    <div class="media-content">
-                        <div class="content">
-                            <p class="title is-4">Fecha de nacimiento</p>
-                            <p class="subtitle is-6">{{ user.date_of_birth|date:"Y-m-d" }}</p>
-                        </div>
-                    </div>
-                </article>
-                <article class="media">
-                    <div class="media-content">
-                        <div class="container center">
-                            <a href="{% url 'my_items' %}" class="button is-primary">Ver mis items</a>
-                            <a href="{% url 'edit_profile' %}" class="button is-primary">Editar tu perfil</a>
-                        </div>
-                    </div>
+                    <p>No has recibido ofertas en estos momentos.</p>
                 </article>
             </div>
+            {% endfor %}
         </div>
-    </section>
+    {% endblock %}
 
+    
     <footer class="footer">
         <p>© Truequeapp - Derechos reservados</p>
         <div class="footer-links">
@@ -195,7 +195,5 @@
             }
         });
     </script>
-
-
 </body>
 </html>

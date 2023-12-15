@@ -2,9 +2,10 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Profile</title>
+    <title>Welcome to Truequeapp</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.9.3/css/bulma.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
+    
     <style>
         html, body {
             height: 100%;
@@ -14,70 +15,96 @@
             display: flex;
             flex-direction: column;
             min-height: 100vh;
-            background-color: #167341;
-        }
-        .section { /* Esta es la clase de tu contenido principal */
-            flex: 1; /* Esto hará que el contenido principal ocupe todo el espacio disponible */
-            display: flex;
-            flex-direction: column;
-        }
-        .box {
-            width: 80%; /* Ajusta el ancho al 80% de su contenedor padre */
-            margin: auto; /* Centra el box horizontalmente */
-            padding: 20px; /* Añade padding para más espacio interno */
-            /* Puedes agregar más estilos aquí según sea necesario */
-        }
-
-        /* Asegúrate de que el container también tenga el ancho adecuado */
-        .container {
-            width: 100%; /* O el ancho que prefieras */
-            /* Más estilos si es necesario */
+            background-color: #167341; /* Este es el color de fondo de todo el cuerpo */
         }
         .content {
             flex-grow: 1;
             display: flex;
             flex-direction: column;
         }
-        .content-wrapper {
-            flex: 1;
+        .select-trade-container {
+            background-color: #f9f9f9;
+            border-radius: 5px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            padding: 20px;
+            width: 100%;
+            max-width: 600px;
+            margin: 30px auto; /* Centrado y con margen superior e inferior */
         }
-        .hero {
-            /* Ajusta esta altura según necesites */
-            height: auto; 
+        .select-trade-title {
+            background-color: #fff; /* Color blanco para mantener consistencia con el chat */
+            color: #333;
+            padding: 10px;
+            margin: -20px -20px 20px -20px;
+            text-align: center;
         }
-        .hero-body {
-            /* Asegúrate de que no haya demasiado padding o margen que esté empujando el contenido hacia abajo */
-            padding: 1rem;
+        form {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px; /* Espacio entre elementos del formulario */
+        }
+        select {
+            width: 100%;
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+            margin-bottom: 10px; /* Espacio debajo del select */
+        }
+        button {
+            background-color: #167341;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 20px;
+            cursor: pointer;
+            width: auto; /* Se ajusta al contenido */
+            margin: 0; /* Elimina márgenes predeterminados */
+        }
+        button:hover {
+            background-color: #145a32;
         }
         .footer {
-            background-color: #333333; /* Color de fondo */
-            padding: 2rem 1rem; /* Espaciado interior */
-            color: white; /* Color del texto */
+            background-color: #333333;
+            padding: 2rem 1rem;
+            color: white;
             text-align: center;
-        }        
+            position: relative; /* Se coloca en relación con su contenedor normal */
+            bottom: 0;
+            width: 100%;
+        }
         .footer a {
-            color: white; /* Color de los enlaces */
-            margin: 0 10px; /* Espaciado entre enlaces */
-            text-decoration: none; /* Sin subrayado */
+            color: white;
+            margin: 0 10px;
+            text-decoration: none;
         }
-        
         .footer a:hover {
-            text-decoration: underline; /* Subrayado al pasar el mouse */
+            text-decoration: underline;
         }
-        
         .footer-icons {
-            margin-top: 1rem; /* Espacio adicional encima de los íconos */
+            margin-top: 1rem;
         }
-        
-        /* Estilos para los íconos de redes sociales (ajusta según tus necesidades) */
         .icon {
             display: inline-block;
             margin: 0 5px;
             color: white;
-            font-size: 1.5rem; /* Tamaño de los íconos */
+            font-size: 1.5rem;
         }
-
+        /* Si es necesario, ajusta los estilos de .navbar para que coincida con el estilo del chat */
+        .navbar {
+            /* Tus estilos para la barra de navegación */
+        }
+        /* Ajustes para el responsive design si es necesario */
+        @media (max-width: 768px) {
+            .select-trade-container {
+                padding: 10px;
+                margin: 10px;
+            }
+        }
     </style>
+    
+
 </head>
 <body>
     <nav class="navbar is-dark" role="navigation" aria-label="main navigation">
@@ -112,47 +139,29 @@
         </div>
     </nav>
 
-    <section class="section">
-        <div class="container">
-            <div class="box">
-                <h1 class="title has-text-centered">Perfil</h1>
-                <article class="media">
-                    <div class="media-content">
-                        <div class="content">
-                            <p class="title is-4">Nombre</p>
-                            <p class="subtitle is-6">{{ user.name }} {{ user.lastname }} {{ user.lastname_m }}</p>
-                        </div>
-                    </div>
-                </article>
-                <hr>
-                <article class="media">
-                    <div class="media-content">
-                        <div class="content">
-                            <p class="title is-4">Email</p>
-                            <p class="subtitle is-6">{{ user.email }}</p>
-                        </div>
-                    </div>
-                </article>
-                <hr>
-                <article class="media">
-                    <div class="media-content">
-                        <div class="content">
-                            <p class="title is-4">Fecha de nacimiento</p>
-                            <p class="subtitle is-6">{{ user.date_of_birth|date:"Y-m-d" }}</p>
-                        </div>
-                    </div>
-                </article>
-                <article class="media">
-                    <div class="media-content">
-                        <div class="container center">
-                            <a href="{% url 'my_items' %}" class="button is-primary">Ver mis items</a>
-                            <a href="{% url 'edit_profile' %}" class="button is-primary">Editar tu perfil</a>
-                        </div>
-                    </div>
-                </article>
+    <div class="content">
+        <div class="container has-text-centered">
+            {% if messages %}
+                <div class="notification is-danger">
+                    {% for message in messages %}
+                        <p>{{ message }}</p>
+                    {% endfor %}
+                </div>
+            {% endif %}
+            <div class="select-trade-container">
+                <h1 class="select-trade-title">Selecciona un Trueque para el Chat</h1>
+                <form action="{% url 'trade_chat_redirect' %}" method="get">
+                    <label for="trade_id">Trueque:</label>
+                    <select name="trade_id" id="trade_id">
+                    {% for trade in trades %}
+                        <option value="{{ trade.id }}">Trueque {{ trade.id }} - {{ trade.status }}</option>
+                    {% endfor %}
+                    </select>
+                    <button type="submit">Ir al Chat</button>
+                </form>
             </div>
         </div>
-    </section>
+    </div>
 
     <footer class="footer">
         <p>© Truequeapp - Derechos reservados</p>
@@ -195,7 +204,5 @@
             }
         });
     </script>
-
-
 </body>
 </html>

@@ -2,36 +2,27 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Profile</title>
+    <title>Welcome to Truequeapp</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.9.3/css/bulma.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
     <style>
         html, body {
             height: 100%;
             margin: 0;
+            background-color: #167341; /* Green background color */
         }
+        
         body {
             display: flex;
             flex-direction: column;
             min-height: 100vh;
-            background-color: #167341;
         }
-        .section { /* Esta es la clase de tu contenido principal */
-            flex: 1; /* Esto hará que el contenido principal ocupe todo el espacio disponible */
-            display: flex;
-            flex-direction: column;
-        }
-        .box {
-            width: 80%; /* Ajusta el ancho al 80% de su contenedor padre */
-            margin: auto; /* Centra el box horizontalmente */
-            padding: 20px; /* Añade padding para más espacio interno */
-            /* Puedes agregar más estilos aquí según sea necesario */
-        }
-
-        /* Asegúrate de que el container también tenga el ancho adecuado */
+                
         .container {
-            width: 100%; /* O el ancho que prefieras */
-            /* Más estilos si es necesario */
+            width: 100%;
+            max-width: 800px; /* Maximum width for the container */
+            padding: 20px;
+            box-sizing: border-box;
         }
         .content {
             flex-grow: 1;
@@ -46,7 +37,6 @@
             height: auto; 
         }
         .hero-body {
-            /* Asegúrate de que no haya demasiado padding o margen que esté empujando el contenido hacia abajo */
             padding: 1rem;
         }
         .footer {
@@ -112,48 +102,71 @@
         </div>
     </nav>
 
-    <section class="section">
-        <div class="container">
-            <div class="box">
-                <h1 class="title has-text-centered">Perfil</h1>
-                <article class="media">
-                    <div class="media-content">
-                        <div class="content">
-                            <p class="title is-4">Nombre</p>
-                            <p class="subtitle is-6">{{ user.name }} {{ user.lastname }} {{ user.lastname_m }}</p>
-                        </div>
-                    </div>
-                </article>
-                <hr>
-                <article class="media">
-                    <div class="media-content">
-                        <div class="content">
-                            <p class="title is-4">Email</p>
-                            <p class="subtitle is-6">{{ user.email }}</p>
-                        </div>
-                    </div>
-                </article>
-                <hr>
-                <article class="media">
-                    <div class="media-content">
-                        <div class="content">
-                            <p class="title is-4">Fecha de nacimiento</p>
-                            <p class="subtitle is-6">{{ user.date_of_birth|date:"Y-m-d" }}</p>
-                        </div>
-                    </div>
-                </article>
-                <article class="media">
-                    <div class="media-content">
-                        <div class="container center">
-                            <a href="{% url 'my_items' %}" class="button is-primary">Ver mis items</a>
-                            <a href="{% url 'edit_profile' %}" class="button is-primary">Editar tu perfil</a>
-                        </div>
-                    </div>
-                </article>
-            </div>
-        </div>
-    </section>
 
+    <div class="container has-text-centered">
+        {% if messages %}
+            <div class="notification is-danger">
+                {% for message in messages %}
+                    <p>{{ message }}</p>
+                {% endfor %}
+            </div>
+        {% endif %}
+        {% block content %}
+            <div class="container">
+                <div class="columns">
+                    <!-- Column for the item being offered for trade -->
+                    <div class="column is-half">
+                        <h2 class="title is-3">Item que deseas adquirir</h2>
+                        <div class="card">
+                            <div class="card-image">
+                                <figure class="image is-2by1">
+                                    <!-- Asegúrate de que item_to_trade es el objeto correcto con el campo image -->
+                                    {% if item_to_trade.image %}
+                                        <img src="{{ item_to_trade.image.url }}" alt="{{ item_to_trade.title }}">
+                                    {% endif %}
+                                </figure>
+                            </div>
+                            <div class="card-content">
+                                <p class="title is-4">{{ item_to_trade.title }}</p>
+                                <p class="subtitle is-6">{{ item_to_trade.description }}</p>
+                                <!-- Other item details here -->
+                            </div>
+                            <footer class="card-footer">
+                                <p class="card-footer-item">
+                                    Price: <span class="tag is-success">{{ item_to_trade.price }}</span>
+                                </p>
+                            </footer>
+                        </div>
+                    </div>
+                    
+                    <!-- Column for the current user's items to offer in trade -->
+                    <div class="column is-half">
+                        <h2 class="title is-3">Tus items</h2>
+                        <!-- The action URL will need to be updated to match the correct view and routing in your urls.py -->
+                        <form method="post" action="{% url 'initiate_trade' item_to_trade.id %}">
+                            {% csrf_token %}
+                            <div class="field">
+                                <label class="label">Escoge cual de tus items ofrecer:</label>
+                                <div class="control">
+                                    <div class="select is-fullwidth">
+                                        <select name="responder_item">
+                                            {% for item in user_items %}
+                                                <option value="{{ item.id }}">{{ item.title }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="control">
+                                <button type="submit" class="button is-link">Ofrecer item para trueque</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            {% endblock %}
+    </div>
+    
     <footer class="footer">
         <p>© Truequeapp - Derechos reservados</p>
         <div class="footer-links">
@@ -195,7 +208,5 @@
             }
         });
     </script>
-
-
 </body>
 </html>

@@ -2,53 +2,84 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Profile</title>
+    <title>Welcome to Truequeapp</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.9.3/css/bulma.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
     <style>
         html, body {
             height: 100%;
             margin: 0;
+            background-color: #167341; /* Green background color */
         }
+        
         body {
             display: flex;
             flex-direction: column;
             min-height: 100vh;
-            background-color: #167341;
         }
-        .section { /* Esta es la clase de tu contenido principal */
-            flex: 1; /* Esto hará que el contenido principal ocupe todo el espacio disponible */
-            display: flex;
-            flex-direction: column;
-        }
-        .box {
-            width: 80%; /* Ajusta el ancho al 80% de su contenedor padre */
-            margin: auto; /* Centra el box horizontalmente */
-            padding: 20px; /* Añade padding para más espacio interno */
-            /* Puedes agregar más estilos aquí según sea necesario */
-        }
-
-        /* Asegúrate de que el container también tenga el ancho adecuado */
-        .container {
-            width: 100%; /* O el ancho que prefieras */
-            /* Más estilos si es necesario */
-        }
-        .content {
-            flex-grow: 1;
-            display: flex;
-            flex-direction: column;
-        }
-        .content-wrapper {
+        
+        .section {
             flex: 1;
+            display: flex;
+            align-items: center; /* Center content vertically */
+            justify-content: center; /* Center content horizontally */
         }
-        .hero {
-            /* Ajusta esta altura según necesites */
-            height: auto; 
+        
+        .container {
+            width: 100%;
+            max-width: 800px; /* Maximum width for the container */
+            padding: 20px;
+            box-sizing: border-box;
         }
-        .hero-body {
-            /* Asegúrate de que no haya demasiado padding o margen que esté empujando el contenido hacia abajo */
-            padding: 1rem;
+        
+        .box {
+            width: 100%; /* Full width of its container */
+            max-width: 600px; /* Maximum width for the form */
+            margin: auto; /* Center the box horizontally */
+            padding: 10px;
+            background-color: #fff; /* White background for the box */
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
         }
+        
+        /* Form elements styling */
+        .field {
+            margin-bottom: 1rem;
+        }
+        
+        .label {
+            margin-bottom: .5rem;
+        }
+        
+        input[type='text'],
+        input[type='email'],
+        textarea {
+            width: 100%;
+            padding: .5rem;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        
+        textarea {
+            resize: vertical;
+        }
+        
+        .button {
+            width: 100%;
+            padding: .8rem;
+            border: none;
+            border-radius: 4px;
+            background-color: #167341; /* Green background for the button */
+            color: white;
+            cursor: pointer;
+            margin-top: 1rem;
+        }
+        
+        .button:hover {
+            background-color: #145a32; /* Darker shade for hover state */
+        }
+        
+        /* Footer styles */
         .footer {
             background-color: #333333; /* Color de fondo */
             padding: 2rem 1rem; /* Espaciado interior */
@@ -76,8 +107,25 @@
             color: white;
             font-size: 1.5rem; /* Tamaño de los íconos */
         }
-
+        
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px; /* Less padding on smaller screens */
+            }
+        
+            .hero-body {
+                padding: 0.5rem; /* Less padding in the hero on smaller screens */
+            }
+        
+            .box {
+                margin-top: 0; /* No negative margin on smaller screens */
+            }
+        }
+        
     </style>
+
+
 </head>
 <body>
     <nav class="navbar is-dark" role="navigation" aria-label="main navigation">
@@ -113,45 +161,46 @@
     </nav>
 
     <section class="section">
-        <div class="container">
-            <div class="box">
-                <h1 class="title has-text-centered">Perfil</h1>
-                <article class="media">
-                    <div class="media-content">
-                        <div class="content">
-                            <p class="title is-4">Nombre</p>
-                            <p class="subtitle is-6">{{ user.name }} {{ user.lastname }} {{ user.lastname_m }}</p>
+            <form method="post" enctype="multipart/form-data" class="box">
+                <h1 class="title has-text-centered" >Subir Items</h1>
+                {% csrf_token %}
+                
+                {% for field in form %}
+                    <div class="field">
+                        <label class="label" for="id_{{ field.name }}">
+                            {% comment %} Aquí se selecciona la traducción adecuada para cada campo {% endcomment %}
+                            {% if field.name == 'title' %}
+                                Título
+                            {% elif field.name == 'description' %}
+                                Descripción
+                            {% elif field.name == 'location' %}
+                                Ubicación
+                            {% elif field.name == 'price' %}
+                                Precio
+                            {% elif field.name == 'tags' %}
+                                Etiquetas
+                            {% elif field.name == 'active' %}
+                                Activo
+                            {% elif field.name == 'image' %}
+                                Imagen
+                                    {% if form.image.errors %}
+                                        <p class="help is-danger">{{ form.image.errors }}</p>
+                                    {% endif %}
+                                {% else %}
+                                    {{ field.label }}  {# Default label if not specified #}
+                                {% endif %}
+                        <div class="control">
+                            {{ field }}
+                            {% for error in field.errors %}
+                                <p class="help is-danger">{{ error }}</p>
+                            {% endfor %}
                         </div>
                     </div>
-                </article>
-                <hr>
-                <article class="media">
-                    <div class="media-content">
-                        <div class="content">
-                            <p class="title is-4">Email</p>
-                            <p class="subtitle is-6">{{ user.email }}</p>
-                        </div>
+                {% endfor %}                
+                <div class="control">
+                        <button type="submit" class="button is-link is-fullwidth">Subir</button>
                     </div>
-                </article>
-                <hr>
-                <article class="media">
-                    <div class="media-content">
-                        <div class="content">
-                            <p class="title is-4">Fecha de nacimiento</p>
-                            <p class="subtitle is-6">{{ user.date_of_birth|date:"Y-m-d" }}</p>
-                        </div>
-                    </div>
-                </article>
-                <article class="media">
-                    <div class="media-content">
-                        <div class="container center">
-                            <a href="{% url 'my_items' %}" class="button is-primary">Ver mis items</a>
-                            <a href="{% url 'edit_profile' %}" class="button is-primary">Editar tu perfil</a>
-                        </div>
-                    </div>
-                </article>
-            </div>
-        </div>
+            </form>
     </section>
 
     <footer class="footer">
@@ -168,7 +217,7 @@
             <a href="#" class="icon"><i class="fab fa-instagram"></i></a>
             <!-- Agrega más íconos de redes sociales si lo deseas -->
         </div>
-    </footer>
+    </footer>  
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
@@ -195,7 +244,24 @@
             }
         });
     </script>
-
-
 </body>
 </html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

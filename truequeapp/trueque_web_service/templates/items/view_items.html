@@ -2,53 +2,49 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Profile</title>
+    <title>Lista de Items</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.9.3/css/bulma.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
+
     <style>
         html, body {
             height: 100%;
             margin: 0;
+            background-color: #167341; /* Green background color */
         }
+        
         body {
             display: flex;
             flex-direction: column;
-            min-height: 100vh;
-            background-color: #167341;
+            justify-content: space-between; /* This will space out the nav, main content, and footer */
         }
-        .section { /* Esta es la clase de tu contenido principal */
-            flex: 1; /* Esto hará que el contenido principal ocupe todo el espacio disponible */
-            display: flex;
-            flex-direction: column;
-        }
-        .box {
-            width: 80%; /* Ajusta el ancho al 80% de su contenedor padre */
-            margin: auto; /* Centra el box horizontalmente */
-            padding: 20px; /* Añade padding para más espacio interno */
-            /* Puedes agregar más estilos aquí según sea necesario */
-        }
-
-        /* Asegúrate de que el container también tenga el ancho adecuado */
-        .container {
-            width: 100%; /* O el ancho que prefieras */
-            /* Más estilos si es necesario */
-        }
-        .content {
+        
+        .section {
             flex-grow: 1;
             display: flex;
             flex-direction: column;
+            justify-content: center; /* Center content vertically */
+            align-items: center; /* Center content horizontally */
+            padding: 20px;
         }
-        .content-wrapper {
-            flex: 1;
+        
+        .container {
+            width: 100%;
+            max-width: 800px; /* Maximum width for the container */
+            padding: 20px;
+            box-sizing: border-box;
         }
-        .hero {
-            /* Ajusta esta altura según necesites */
-            height: auto; 
+        
+        .box {
+            width: 100%; /* Full width of its container */
+            max-width: 600px; /* Maximum width for the form */
+            margin: auto; /* Center the box horizontally */
+            padding: 20px;
+            background-color: #fff; /* White background for the box */
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
         }
-        .hero-body {
-            /* Asegúrate de que no haya demasiado padding o margen que esté empujando el contenido hacia abajo */
-            padding: 1rem;
-        }
+        
         .footer {
             background-color: #333333; /* Color de fondo */
             padding: 2rem 1rem; /* Espaciado interior */
@@ -76,10 +72,18 @@
             color: white;
             font-size: 1.5rem; /* Tamaño de los íconos */
         }
-
+        
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .section {
+                padding: 10px; /* Less padding on smaller screens */
+            }
+        }
     </style>
+
 </head>
 <body>
+
     <nav class="navbar is-dark" role="navigation" aria-label="main navigation">
         <div class="navbar-brand">
             <a class="navbar-item" href="{% url 'index' %}">
@@ -112,47 +116,79 @@
         </div>
     </nav>
 
-    <section class="section">
-        <div class="container">
-            <div class="box">
-                <h1 class="title has-text-centered">Perfil</h1>
-                <article class="media">
-                    <div class="media-content">
-                        <div class="content">
-                            <p class="title is-4">Nombre</p>
-                            <p class="subtitle is-6">{{ user.name }} {{ user.lastname }} {{ user.lastname_m }}</p>
-                        </div>
-                    </div>
-                </article>
-                <hr>
-                <article class="media">
-                    <div class="media-content">
-                        <div class="content">
-                            <p class="title is-4">Email</p>
-                            <p class="subtitle is-6">{{ user.email }}</p>
-                        </div>
-                    </div>
-                </article>
-                <hr>
-                <article class="media">
-                    <div class="media-content">
-                        <div class="content">
-                            <p class="title is-4">Fecha de nacimiento</p>
-                            <p class="subtitle is-6">{{ user.date_of_birth|date:"Y-m-d" }}</p>
-                        </div>
-                    </div>
-                </article>
-                <article class="media">
-                    <div class="media-content">
-                        <div class="container center">
-                            <a href="{% url 'my_items' %}" class="button is-primary">Ver mis items</a>
-                            <a href="{% url 'edit_profile' %}" class="button is-primary">Editar tu perfil</a>
-                        </div>
-                    </div>
-                </article>
+{% load static %}  <!-- Asegúrate de cargar la etiqueta static al comienzo de tu archivo HTML -->
+
+<div class="container">
+    {% if messages %}
+            <div class="notification is-danger">
+                {% for message in messages %}
+                    <p>{{ message }}</p>
+                {% endfor %}
             </div>
-        </div>
-    </section>
+        {% endif %}
+    <h1 class="title has-text-centered" style="color: white;">Mercado</h1>
+    <div class="columns is-multiline">
+        {% for item in page_obj %}
+            <div class="column is-one-quarter">
+                <div class="card">
+                    <div class="card-image">
+                        <figure class="image is-4by3">
+                            {% if item.image %}
+                                <img src="{{ item.image.url }}" alt="{{ item.title }}">
+                            {% else %}
+                                <!-- Imagen por defecto utilizando la etiqueta static -->
+                                <img src="{% static 'images/perrito.jpg' %}" alt="Imagen por defecto">
+                            {% endif %}
+                        </figure>
+                    </div>
+                    <div class="card-content">
+                        <div class="media">
+                            <div class="media-content">
+                                <p class="title is-4">{{ item.title }}</p>
+                                <p class="subtitle is-6">{{ item.user.name }}</p>
+                                <p class="subtitle is-6">{{ item.location }}</p>
+                            </div>
+                        </div>
+
+                        <div class="content">
+                            {{ item.description|truncatewords:30 }}
+                            <br>
+                            <time datetime="{{ item.date_posted }}">{{ item.date_posted }}</time>
+                        </div>
+                    </div>
+                    <footer class="card-footer">
+                        <p class="card-footer-item">
+                            <span class="title is-3">{{ item.price }}</span>
+                        </p>
+                        {% if user.is_authenticated and item.user != user %}
+                            <a href="{% url 'initiate_trade' item.id %}" class="button is-primary">Cambiar</a>
+                        {% endif %}
+                    </footer>
+                </div>
+            </div>
+        {% empty %}
+            <h1 class="title has-text-centered" style="color: white;">No hay items disponibles</h1>
+        {% endfor %}
+    </div>
+    <nav class="pagination" role="navigation" aria-label="pagination">
+        {% if page_obj.has_previous %}
+            <a href="?page={{ page_obj.previous_page_number }}" class="pagination-previous">Anterior</a>
+        {% endif %}
+        {% if page_obj.has_next %}
+            <a href="?page={{ page_obj.next_page_number }}" class="pagination-next">Siguiente</a>
+        {% endif %}
+        <ul class="pagination-list">
+            {% for num in page_obj.paginator.page_range %}
+                {% if page_obj.number == num %}
+                    <li><a class="pagination-link is-current">{{ num }}</a></li>
+                {% else %}
+                    <li><a href="?page={{ num }}" class="pagination-link">{{ num }}</a></li>
+                {% endif %}
+            {% endfor %}
+        </ul>
+    </nav>
+</div>
+
 
     <footer class="footer">
         <p>© Truequeapp - Derechos reservados</p>
@@ -169,6 +205,7 @@
             <!-- Agrega más íconos de redes sociales si lo deseas -->
         </div>
     </footer>
+    
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
@@ -195,7 +232,6 @@
             }
         });
     </script>
-
 
 </body>
 </html>

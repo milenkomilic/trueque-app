@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>My Items</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.9.3/css/bulma.min.css">
+    <style>
+        html, body {
+            height: 100%;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            background-color: #167341;
+        }
+        .section {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            height: 100%; /* Esto asegura que tome toda la altura disponible */
+        }
+        /* Asegúrate de que el container también tenga el ancho adecuado */
+        .container {
+            width: 100%; /* O el ancho que prefieras */
+            /* Más estilos si es necesario */
+        }
+        .content {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh; /* Esto establece una altura mínima basada en la altura de la ventana */
+        }
+        .content-wrapper {
+            flex: 1;
+        }
+        .hero {
+            /* Ajusta esta altura según necesites */
+            height: auto; 
+        }
+        .hero-body {
+            /* Asegúrate de que no haya demasiado padding o margen que esté empujando el contenido hacia abajo */
+            padding: 1rem;
+        }
+        .footer {
+            background-color: #333333; /* Color de fondo */
+            padding: 2rem 1rem; /* Espaciado interior */
+            color: white; /* Color del texto */
+            text-align: center;
+        }        
+        .footer a {
+            color: white; /* Color de los enlaces */
+            margin: 0 10px; /* Espaciado entre enlaces */
+            text-decoration: none; /* Sin subrayado */
+        }
+        
+        .footer a:hover {
+            text-decoration: underline; /* Subrayado al pasar el mouse */
+        }
+        
+        .footer-icons {
+            margin-top: 1rem; /* Espacio adicional encima de los íconos */
+        }
+        
+        /* Estilos para los íconos de redes sociales (ajusta según tus necesidades) */
+        .icon {
+            display: inline-block;
+            margin: 0 5px;
+            color: white;
+            font-size: 1.5rem; /* Tamaño de los íconos */
+        }
+        /* Pagination buttons */
+        .pagination-link, .pagination-next, .pagination-previous {
+            background-color: #ffffff; /* White background */
+            color: #167341; /* Color that matches your site's theme */
+            border: 1px solid #167341; /* Border to make it stand out */
+            text-decoration: none; /* Remove underline */
+            padding: 0.5em 0.75em; /* Padding for spacing */
+            margin: 0.25em; /* Margin for spacing around buttons */
+        }
+
+        /* Current page button */
+        .pagination-link.is-current {
+            background-color: #167341; /* Theme color background */
+            color: #ffffff; /* White text */
+            border-color: #167341;
+        }
+
+        /* Hover effect */
+        .pagination-link:hover, .pagination-next:hover, .pagination-previous:hover {
+            background-color: #145a32; /* Darker shade for hover effect */
+            color: #ffffff;
+            border-color: #145a32;
+        }
+
+    </style>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+    <nav class="navbar is-dark" role="navigation" aria-label="main navigation">
+        <div class="navbar-brand">
+            <a class="navbar-item" href="{% url 'index' %}">
+                <strong>Truequeapp</strong>
+            </a>
+            <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false" data-target="navbarBasicExample">
+                <span aria-hidden="true"></span>
+                <span aria-hidden="true"></span>
+                <span aria-hidden="true"></span>
+            </a>
+        </div>
+        <div id="navbarBasicExample" class="navbar-menu">
+            <div class="navbar-start"> 
+                {% if user.is_authenticated %}
+                    <!-- Links para usuarios autenticados -->
+                    <a class="navbar-item" href="{% url 'user_profile' %}">Perfil</a>
+                    <a class="navbar-item" href="{% url 'upload_item' %}">Subir</a>
+                    <a class="navbar-item" href="{% url 'view_items' %}">Mercado</a>
+                    <a class="navbar-item" href="{% url 'respond_to_trade' %}">Notificaciones</a>
+                    <a class="navbar-item" href="{% url 'list_trades_for_chat' %}">Chat</a>
+
+
+                {% endif %}
+                <!-- Links comunes a todos los usuarios -->
+                <a class="navbar-item" href="{% url 'contacto' %}">Contacto</a>
+                {% if user.is_authenticated %}
+                <a class="navbar-item" href="{% url 'logout' %}">Cerrar Sesion</a>
+                {% endif %}
+            </div>
+        </div>
+    </nav>
+
+    <section class="section">
+        <div class="container">
+            <h1 class="title" style="color: white;">Mis items</h1>
+            <div class="columns is-multiline">
+                {% for item in items %}
+                <div class="column is-one-quarter">
+                    <div class="card" data-item-id="{{ item.id }}">
+                        <div class="card-content">
+                            <!-- Asegúrate de que los campos sean editables -->
+                            <input type="text" class="input title" value="{{ item.title }}" disabled>
+                            <input type="text" class="input subtitle" value="{{ item.price }}" disabled>
+                            <label class="checkbox">
+                                <input type="checkbox" class="item-active" {% if item.active %}checked{% endif %} disabled>
+                                Activado
+                            </label>
+                            <textarea class="textarea content" disabled>{{ item.description }}</textarea>
+                        </div>
+                        <footer class="card-footer">
+                            <a href="#" class="card-footer-item btn-edit">Editar</a>
+                            <a href="#" class="card-footer-item btn-delete" data-item-id="{{ item.id }}">Borrar</a>
+                            <a href="#" class="card-footer-item btn-save" style="display: none;">Guardar</a>
+                        </footer>
+                    </div>
+                </div>
+            {% endfor %}
+
+            <nav class="pagination" role="navigation" aria-label="pagination">
+                {% if page_obj.has_previous %}
+                    <a href="?page={{ page_obj.previous_page_number }}" class="pagination-previous">Anterior</a>
+                {% endif %}
+                {% if page_obj.has_next %}
+                    <a href="?page={{ page_obj.next_page_number }}" class="pagination-next">Siguiente</a>
+                {% endif %}
+                <ul class="pagination-list">
+                    {% for num in page_obj.paginator.page_range %}
+                        {% if page_obj.number == num %}
+                            <li><a class="pagination-link is-current">{{ num }}</a></li>
+                        {% else %}
+                            <li><a href="?page={{ num }}" class="pagination-link">{{ num }}</a></li>
+                        {% endif %}
+                    {% endfor %}
+                </ul>
+            </nav>            
+
+            </div>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <p>© Truequeapp - Derechos reservados</p>
+        <div class="footer-links">
+            <a href="#">Acerca de</a>
+            <a href="#">Contacto</a>
+            <!-- Agrega más enlaces si lo deseas -->
+        </div>
+        <div class="footer-icons">
+            <!-- Ejemplo de íconos, puedes usar una librería como FontAwesome -->
+            <a href="#" class="icon"><i class="fab fa-facebook"></i></a>
+            <a href="#" class="icon"><i class="fab fa-twitter"></i></a>
+            <a href="#" class="icon"><i class="fab fa-instagram"></i></a>
+            <!-- Agrega más íconos de redes sociales si lo deseas -->
+        </div>
+    </footer>  
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Obtén todas las "navbar-burger" elementos
+            const $navbarBurgers = Array.prototype.slice.call(document.querySelectorAll('.navbar-burger'), 0);
+    
+            // Verifica si hay navbar burgers
+            if ($navbarBurgers.length > 0) {
+    
+                // Añade un evento de clic en cada uno
+                $navbarBurgers.forEach(el => {
+                    el.addEventListener('click', () => {
+    
+                        // Obtiene el valor del atributo "data-target"
+                        const target = el.dataset.target;
+                        const $target = document.getElementById(target);
+    
+                        // Alterna las clases "is-active" en el "navbar-burger" y el "navbar-menu"
+                        el.classList.toggle('is-active');
+                        $target.classList.toggle('is-active');
+    
+                    });
+                });
+            }
+        });
+    </script>
+
+</body>
+<script>
+    $(document).ready(function() {
+        // Función para manejar el evento de clic en 'Editar'
+        $('.btn-edit').click(function(e) {
+            e.preventDefault();
+            let card = $(this).closest('.card');
+            card.find('.input, .textarea').prop('disabled', false);
+            card.find('.item-active').prop('disabled', false); // Habilitar el checkbox
+            $(this).hide();
+            card.find('.btn-save').show();
+            card.find('.btn-delete').hide();
+        });
+    
+        // Función para manejar el evento de clic en 'Guardar'
+        $('.btn-save').click(function(e) {
+            e.preventDefault();
+            let card = $(this).closest('.card');
+            let itemId = card.data('item-id');
+            let title = card.find('.title').val();
+            let price = card.find('.subtitle').val();
+            let description = card.find('.content').val();
+            let isActive = card.find('.item-active').is(':checked');
+    
+            // Envía los datos actualizados al servidor usando AJAX
+            $.ajax({
+                url: '{% url "update_item" %}', // URL de la vista Django para actualizar ítems
+                type: 'POST',
+                data: {
+                    'id': itemId,
+                    'title': title,
+                    'price': price,
+                    'description': description,
+                    'active': isActive,
+                    'csrfmiddlewaretoken': '{{ csrf_token }}'
+                },
+                success: function(response) {
+                    // Vuelve a deshabilitar los campos y cambia los botones
+                    card.find('.input, .textarea').prop('disabled', true);
+                    card.find('.btn-save').hide();
+                    card.find('.btn-edit').show();
+                    card.find('.btn-delete').show();
+                    // Opcional: mostrar mensaje de éxito
+                    alert("Item edited successfully.");
+                },
+                error: function() {
+                    alert("An error occurred while editing the item.");
+                }
+            });
+        });
+            
+        // Función para manejar el evento de clic en 'Eliminar'
+        $('.btn-delete').click(function(e) {
+            e.preventDefault();
+
+            if (!confirm("Are you sure you want to delete this item?")) {
+                return; // Detener la función si el usuario no confirma
+            }
+
+            let itemId = $(this).data('item-id');
+            let card = $(this).closest('.card');
+
+            $.ajax({
+                url: '{% url "delete_item" %}', // La URL de tu vista de eliminación
+                type: 'POST',
+                data: {
+                    'item_id': itemId,
+                    'csrfmiddlewaretoken': '{{ csrf_token }}'
+                },
+                success: function(response) {
+                    // Eliminar la tarjeta del ítem del DOM o actualizar la página
+                    card.remove();
+                    // Opcional: mostrar mensaje de éxito
+                    alert("Item deleted successfully.");
+                },
+                error: function() {
+                    // Manejar errores (como mostrar un mensaje de error)
+                    alert("An error occurred while deleting the item.");
+                }
+            });
+        });
+        
+    });
+    </script>
+</html>
+
